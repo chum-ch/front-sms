@@ -1,15 +1,24 @@
 <script setup>
+import { onMounted, ref, computed, inject } from 'vue'
+import { useRouter } from 'vue-router'
+const route = useRouter()
 defineProps({
   msg: {
     type: String,
-    required: true
+    required: false
   }
 })
+const passedValue = ref('')
+
+// Handle the passed value from Nav.vue
+const handlePassValue = (value) => {
+  passedValue.value = value
+}
 </script>
 
 <template>
   <div class="greetings">
-    <h1 class="green">{{ msg }}</h1>
+    <NavigationView @updatedBreadCrumb="handlePassValue"/>
     <h3>
       You’ve successfully created a project with
       <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +

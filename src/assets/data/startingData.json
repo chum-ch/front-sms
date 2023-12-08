@@ -1,0 +1,50 @@
+[
+  {
+    "name": "students",
+    "img": "https://img.icons8.com/external-others-cattaleeya-thongsriphong/64/228BE6/external-Students-online-learning-outline-others-cattaleeya-thongsriphong.png",
+    "title": "Students",
+    "description": "Manage all students in school."
+  },
+  {
+    "name": "trainers",
+    "img": "https://img.icons8.com/glyph-neue/64/228BE6/classroom.png",
+    "title": "Trainers",
+    "description": "Manage all trainers in school."
+  },
+  {
+    "name": "rooms",
+    "img": "https://img.icons8.com/wired/64/228BE6/room.png",
+    "title": "Rooms",
+    "description": "Manage all rooms in school"
+  },
+  {
+    "name": "schedules",
+    "img": "https://img.icons8.com/external-smashingstocks-detailed-outline-smashing-stocks/66/228BE6/external-schedule-business-smashingstocks-detailed-outline-smashing-stocks.png",
+    "title": "Schedules",
+    "description": "Manage all schedules in school"
+  },
+  {
+    "name": "classes",
+    "img": "https://img.icons8.com/wired/64/228BE6/class.png",
+    "title": "Classes",
+    "description": "Manage all classes in school"
+  },
+  {
+    "name": "courses",
+    "img": "https://img.icons8.com/external-others-phat-plus/64/228BE6/external-courses-online-courses-outline-others-phat-plus-36.png",
+    "title": "Courses",
+    "description": "Manage all courses in school"
+  },
+  {
+    "name": "generations",
+    "img": "https://img.icons8.com/external-kmg-design-glyph-kmg-design/64/228BE6/external-graduation-back-to-school-kmg-design-glyph-kmg-design-2.png",
+    "title": "Generations",
+    "description": "Manage all generations in school"
+  },
+  {
+    "name": "exams",
+    "img": "https://img.icons8.com/external-vitaliy-gorbachev-lineal-vitaly-gorbachev/100/228BE6/external-exam-online-learning-vitaliy-gorbachev-lineal-vitaly-gorbachev.png",
+    "title": "Exams",
+    "description": "Manage all exams in school"
+  }
+]

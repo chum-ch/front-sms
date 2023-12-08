@@ -1,13 +1,38 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-
+import DashBoard from '../components/DashBoard.vue'
+import HelloWorld from '../components/HelloWorld.vue'
+import SchoolsRouter from '../components/schools/route';
+// import TrainersRouter from '../components/trainers/route';
+// import ClassesRouter from '../components/classes/route';
+import RoomsRouter from '../components/rooms/route';
+// import StudentsRouter from '../components/students/route';
+// import CleanersRouter from '../components/cleaners/route';
+// import SchedulesRouter from '../components/schedules/route';
+// import CoursesRouter from '../components/courses/route';
+// import GenerationsRouter from '../components/generations/route';
+// import ExamsRouter from '../components/exams/route';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+  ...SchoolsRouter,
+  // ...ClassesRouter,
+  ...RoomsRouter,
+  // ...TrainersRouter,
+  // ...StudentsRouter,
+  // ...CleanersRouter,
+  // ...SchedulesRouter,
+  // ...CoursesRouter,
+  // ...GenerationsRouter,
+  // ...ExamsRouter,
     {
-      path: '/',
-      name: 'home',
-      component: HomeView
+      path: '/hello',
+      name: 'hello',
+      component: HelloWorld
+    },
+    {
+      path: '/schools/:schoolId/manages',
+      name: 'manages',
+      component: DashBoard
     },
     {
       path: '/about',
