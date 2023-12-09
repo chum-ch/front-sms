@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       values: this.defaultValue ? this.defaultValue : {},
-      p_invalid: "",
+      pInvalid: "",
       objectStyleCSS: {
         color: "gray",
         cursor: "not-allowed",
@@ -65,17 +65,23 @@ export default {
         this.$emit("update:modelValue", data);
       },
     },
-    message_error: {
+    messageError: {
       immediate: true,
       handler(data) {
         if (data) {
-          this.p_invalid = "p-invalid";
+          this.pInvalid = "p-invalid";
         }
       },
     },
   },
-  created() {},
-  methods: {},
+  created() {
+    if (this.modelValue) {
+      this.values = this.modelValue;
+      console.log('v', this.values);
+    }
+  },
+  methods: {
+  },
 };
 </script>
 

@@ -16,17 +16,17 @@ const refToChildRoomForm = ref()
 const refToChildCustomDialogDeleteRoomForm = ref()
 
 // Breadcrumb
+const schoolId = route.currentRoute.value.params.schoolId
 const schoolBc = $globalFunction.getDataLs('schoolBc')
 const breadCrumb = ref([])
 if (!schoolBc) {
   route.push('/')
 } else {
   breadCrumb.value.push(
-    { route: `/schools/${schoolBc.SCHOOLS_ID}/manages`, label: schoolBc.Name },
-    { route: `/schools/${schoolBc.SCHOOLS_ID}/rooms`, label: 'Rooms' }
+    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
+    { route: `/schools/${schoolId}/rooms`, label: 'Rooms' }
   )
 }
-const schoolId = schoolBc.SCHOOLS_ID
 
 // Table
 const refToChildCustomTable = ref()

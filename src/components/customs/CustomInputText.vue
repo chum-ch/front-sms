@@ -1,6 +1,6 @@
 <template>
-  <div class="p-fluid mb-2">
-    <div :class="hideLabel ? 'd-none' : ''">
+  <div class="p-fluid mb-1">
+    <div class="mb-1" :class="hideLabel ? 'd-none' : ''">
       <label v-if="label !== ''">{{ label }} </label>
       <span v-if="required" class="text-red-500"> *</span>
     </div>

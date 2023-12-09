@@ -13,12 +13,10 @@
         :placeholder="placeholder"
         :filterPlaceholder="'Search'"
         optionLabel="Value"
-        :class="required && message_error !== '' ? p_invalid : ''"
+        :class="required && messageError !== '' ? p_invalid : ''"
         @update:modelValue="updateModelValue"
       >
-      <template #content>
-        <p>Hee</p>
-      </template>
+        <template #content> </template>
         <template #value="slotProps">
           <div v-if="slotProps.value" class="flex align-items-center">
             <div>{{ slotProps.value.Value }}</div>
@@ -34,14 +32,12 @@
         </template>
 
         <template #emptyfilter>
-          <small class="flex justify-content-between">
+          <small v-show="filterValue" class="flex justify-content-between">
             <span
               >Value <span class="fw-bolder text-primary">{{ filterValue }}</span> is not
               found!</span
             >
-            <span
-              class="text-white customEmpty"
-              @click="$emit('addNewDropdown', filterValue)"
+            <span class="text-white customEmpty" @click="$emit('addNewDropdown', filterValue)"
               >Add New</span
             >
           </small>
@@ -49,68 +45,66 @@
         <template #empty>
           <small class="flex justify-content-between">
             <span>No more item !</span>
-            <span
-              class="text-white customEmpty"
-              @click="$emit('addNewDropdown', filterValue)"
+            <span class="text-white customEmpty" @click="$emit('addNewDropdown', filterValue)"
               >Add New</span
             >
           </small>
         </template>
       </Dropdown>
-      <small v-if="message_error !== ''" class="flex text-red-500 mt-1">
-        {{ message_error }}
-        <i :class="message_error ? 'pi pi-info-circle' : ''" style="margin: 2px" />
+      <small v-if="messageError !== ''" class="flex text-red-500 mt-1">
+        {{ messageError }}
+        <i :class="messageError ? 'pi pi-info-circle' : ''" style="margin: 2px" />
       </small>
     </section>
   </div>
 </template>
 
 <script>
-import Dropdown from "primevue/dropdown";
+import Dropdown from 'primevue/dropdown'
 export default {
-  name: "CustomDropdown",
+  name: 'CustomDropdown',
   components: {
-    Dropdown,
+    Dropdown
   },
   data() {
     return {
-      selectedValue: "",
-      filterValue: "",
-      p_invalid: "",
-      
-    };
+      selectedValue: '',
+      filterValue: '',
+      p_invalid: ''
+    }
   },
   props: {
     msg: String,
     placeholder: String,
     options: Array,
     required: Boolean,
-    message_error: String,
+    messageError: String,
     label: String,
-    modelValue: [String, Object, Number],
+    modelValue: [String, Object, Number]
   },
-  emits: ["update:modelValue", "addNewDropdown"],
+  emits: ['update:modelValue', 'addNewDropdown'],
   watch: {},
   updated() {
-    if(this.message_error) {
-      this.p_invalid = 'p-invalid';
+    if (this.messageError) {
+      this.p_invalid = 'p-invalid'
     } else {
-      this.p_invalid = "";
+      this.p_invalid = ''
     }
-    this.updateModelValue(this.modelValue);
+    this.updateModelValue(this.modelValue)
   },
   created() {
+    this.filterValue = ''
   },
   methods: {
     handleFilterChange(event) {
-      this.filterValue = event.value;
+      this.filterValue = event.value
     },
     updateModelValue(value) {
-      this.selectedValue = value;
-      this.$emit("update:modelValue", this.selectedValue);
-    },
-  },
-};
+      this.selectedValue = value
+      this.$emit('update:modelValue', this.selectedValue)
+    }
+  }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

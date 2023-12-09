@@ -173,7 +173,6 @@ defineExpose({
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       currentPageReportTemplate="Showing from {first} to {last} of {totalRecords}"
-      filterDisplay="menu"
     >
       <template #empty>
         <div v-if="tableData.length !== 0" class="text-center">

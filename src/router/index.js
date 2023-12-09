@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashBoard from '../components/DashBoard.vue'
+import PageNotFound from '../components/PageNotFound.vue'
 import HelloWorld from '../components/HelloWorld.vue'
 import SchoolsRouter from '../components/schools/route';
-// import TrainersRouter from '../components/trainers/route';
-// import ClassesRouter from '../components/classes/route';
+import TrainersRouter from '../components/trainers/route';
+import ClassesRouter from '../components/classes/route';
 import RoomsRouter from '../components/rooms/route';
-// import StudentsRouter from '../components/students/route';
+import StudentsRouter from '../components/students/route';
 // import CleanersRouter from '../components/cleaners/route';
 // import SchedulesRouter from '../components/schedules/route';
 // import CoursesRouter from '../components/courses/route';
@@ -15,10 +16,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
   ...SchoolsRouter,
-  // ...ClassesRouter,
+  ...ClassesRouter,
   ...RoomsRouter,
-  // ...TrainersRouter,
-  // ...StudentsRouter,
+  ...TrainersRouter,
+  ...StudentsRouter,
   // ...CleanersRouter,
   // ...SchedulesRouter,
   // ...CoursesRouter,
@@ -41,7 +42,12 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
-    }
+    },
+    {
+      path:"/:pathMatch(.*)*",
+      name:"not-found",
+      component: PageNotFound
+},
   ]
 })
 

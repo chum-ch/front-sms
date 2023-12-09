@@ -1,32 +1,3 @@
-<template>
-  <div class="hello">
-    <!-- Dialog room form  -->
-    <CustomDialog
-      ref="dialogRoomForm"
-      :modalHeader="'Room Form'"
-      @onClickDialogSubmit="createRoomInfo"
-      @onClickCloseDialog="closeDialogRoomForm"
-      :footerLabel="footerLabel"
-    >
-      <template #bodyDialog>
-        <CustomInputText
-          :placeholder="'.......'"
-          :label="'Room name'"
-          v-model="roomForm.Name"
-          :required="true"
-          :messageError="message.Name"
-          class=""
-        />
-        <CustomInputText
-          :placeholder="'.......'"
-          :label="'Floor'"
-          v-model="roomForm.Floor"
-          class=""
-        />
-      </template>
-    </CustomDialog>
-  </div>
-</template>
 
 <script setup>
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
@@ -110,4 +81,33 @@ const setDefaultValue = () => {
 defineExpose({ openDialogRoomForm, onlyUpdateRoom })
 </script>
 
+<template>
+  <div class="hello">
+    <!-- Dialog room form  -->
+    <CustomDialog
+      ref="dialogRoomForm"
+      :modalHeader="'Room Form'"
+      @onClickDialogSubmit="createRoomInfo"
+      @onClickCloseDialog="closeDialogRoomForm"
+      :footerLabel="footerLabel"
+    >
+      <template #bodyDialog>
+        <CustomInputText
+          :placeholder="'.......'"
+          :label="'Room name'"
+          v-model="roomForm.Name"
+          :required="true"
+          :messageError="message.Name"
+          class=""
+        />
+        <CustomInputText
+          :placeholder="'.......'"
+          :label="'Floor'"
+          v-model="roomForm.Floor"
+          class=""
+        />
+      </template>
+    </CustomDialog>
+  </div>
+</template>
 <style scoped></style>

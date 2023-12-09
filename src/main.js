@@ -31,12 +31,14 @@ import CustomTable from './components/customs/CustomTable.vue';
 import CustomCard from './components/customs/CustomCard.vue';
 import CustomInputText from './components/customs/CustomInputText.vue';
 import CustomDialog from './components/customs/CustomDialog.vue';
+import CustomRadioButton from './components/customs/CustomRadioButton.vue';
+import CustomDropdown from './components/customs/CustomDropdown.vue';
 const app = createApp(App)
 
 // Config Axios
 const $api = API(axios);
-// axios.defaults.baseURL = 'http://localhost:3003';
-axios.defaults.baseURL = 'https://svc-sms.onrender.com';
+axios.defaults.baseURL = 'http://localhost:3003';
+// axios.defaults.baseURL = 'https://svc-sms.onrender.com';
 // Register component
 // Primevue
 app.component('PrimeVueButton', Button);
@@ -51,6 +53,9 @@ app.component('CustomCard', CustomCard);
 app.component('CustomTable', CustomTable);
 app.component('CustomInputText', CustomInputText);
 app.component('CustomDialog', CustomDialog);
+app.component('CustomRadioButton', CustomRadioButton);
+app.component('CustomDropdown', CustomDropdown);
+
 app.use(router)
 app.use(PrimeVue);
 app.provide('$api', $api);

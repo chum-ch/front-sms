@@ -1,23 +1,23 @@
 <template>
   <div class="hello">
     <!-- Dialog class form  -->
-    <custom-dialog
+    <CustomDialog
       ref="refToChildCustomDialog"
-      :modal_header="'Class Form'"
+      :modalHeader="'Class Form'"
       @onClickDialogSubmit="createClassInfo"
       @onClickCloseDialog="closeDialogClassForm"
-      :footer_label="footer_label"
+      :footerLabel="footerLabel"
     >
       <template #bodyDialog>
-        <custom-input-text
+        <CustomInputText
           :placeholder="'.......'"
           :label="'Class name'"
           :required="true"
           v-model="classForm.Name"
-          :message_error="message.Name"
+          :messageError="message.Name"
           class="col-12 py-0"
         />
-        <custom-dropdown
+        <CustomDropdown
           :options="roomOptions"
           :placeholder="'Select room'"
           :label="'Room'"
@@ -26,9 +26,9 @@
           :modelValue="selectRoom"
           :required="true"
           @addNewDropdown="onClickCreateRoom"
-          :message_error="message.Room"
+          :messageError="message.Room"
         />
-        <custom-dropdown
+        <CustomDropdown
           :options="trainerOptions"
           :placeholder="'Select trainer'"
           :label="'Trainer'"
@@ -38,193 +38,190 @@
           @addNewDropdown="onClickCreateTrainer"
         />
       </template>
-    </custom-dialog>
+    </CustomDialog>
     <!-- Child trainer form  -->
     <TrainerForm ref="refToChildTrainerForm" @updatedTrainer="updatedTrainer" />
     <!-- Child room form  -->
     <RoomForm ref="refToChildRoomForm" @updatedRoom="updatedRoom" />
   </div>
 </template>
-<script>
-import TrainerForm from "../trainers/TrainerForm.vue";
-import RoomForm from "../rooms/RoomForm.vue";
-export default {
-  components: {
-    TrainerForm,
-    RoomForm,
-  },
-  data() {
-    return {
-      schoolId: this.$route.params.schoolId,
-      // Form class
-      classID: "",
-      classForm: {
-        Name: "",
-        Floor: "",
-      },
-      // Room
-      selectRoom: "",
-      roomOptions: [],
-      // Trainer
-      trainerOptions: [],
-      selectTrainer: "",
-      // Error message
-      message: {
-        Name: "",
-        Room: "",
-      },
-      // Dialog
-      footer_label: "",
-    };
-  },
-  props: {
-    msg: String,
-  },
-  emits: ["updatedClass"],
-  updated() {},
-  watch: {},
-  created() {},
-  mounted() {},
-  methods: {
-    openDialogClassForm() {
-      this.$refs.refToChildCustomDialog.openDialog();
-      this.listRooms();
-      this.listTrainers();
-    },
-    closeDialogClassForm() {
-      this.$refs.refToChildCustomDialog.closeDialog();
-      this.setDefaultValue();
-    },
-    onlyUpdateClasses(data = {}) {
-      if (data && Object.keys(data).length > 0) {
-        this.classForm.Name = data.Name;
-        // Get class Id
-        this.classID = data.CLASSES_ID;
-        if (this.classID) {
-          this.footer_label = "Edit";
-        }
-        // Room option
-        if (data.Room && Object.keys(data.Room).length > 0) {
-          this.selectRoom = {
-            Value: data.Room ? data.Room.Name : "",
-            ID: data.Room ? data.Room.Id : "",
-          };
-        }
-        // Trainer option
-        if (data.Trainer && Object.keys(data.Trainer).length > 0) {
-          this.selectTrainer = {
-            Value: data.Trainer ? data.Trainer.Name : "",
-            ID: data.Trainer ? data.Trainer.Id : "",
-          };
-        }
+<script setup>
+import TrainerForm from '../trainers/TrainerForm.vue'
+import RoomForm from '../rooms/RoomForm.vue'
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(() => {})
+defineEmits(['updatedClass'])
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const schoolId = route.currentRoute.value.params.schoolId
+const $globalFunction = inject('$globalFunction')
+const breadCrumb = ref([])
+// Functions
+// Form class
+const classID = ref('')
+const classForm = ref({
+  Name: '',
+  Floor: ''
+})
+// Room
+const selectRoom = ref('')
+const roomOptions = ref([])
+// Trainer
+const trainerOptions = ref([])
+const selectTrainer = ref('')
+const refToChildRoomForm = ref();
+const refToChildCustomDialog = ref()
+const refToChildTrainerForm = ref()
+// Error message
+const message = ref({
+  Name: '',
+  Room: ''
+})
+// Dialog
+const footerLabel = ref('')
+
+const openDialogClassForm = () => {
+  refToChildCustomDialog.value.openDialog()
+  listRooms()
+  listTrainers()
+}
+const closeDialogClassForm = () => {
+  refToChildCustomDialog.value.closeDialog()
+  setDefaultValue()
+}
+const onlyUpdateClasses = (data = {}) => {
+  if (data && Object.keys(data).length > 0) {
+    classForm.value.Name = data.Name
+    // Get class Id
+    classID.value = data.CLASSES_ID
+    if (classID.value) {
+      footerLabel.value = 'Update'
+    }
+    // Room option
+    if (data.Room && Object.keys(data.Room).length > 0) {
+      selectRoom.value = {
+        Value: data.Room ? data.Room.Name : '',
+        ID: data.Room ? data.Room.Id : ''
       }
-    },
-    async createClassInfo() {
-      try {
-        if (
-          this.classForm.Name &&
-          this.selectRoom && Object.keys(this.selectRoom).length > 0
-        ) {
-          this.classForm = {
-            ...this.classForm,
-            Trainer: { Name: this.selectTrainer.Value, Id: this.selectTrainer.ID },
-            Room: { Name: this.selectRoom.Value, Id: this.selectRoom.ID },
-          };
-          let classes = {};
-          if (this.classID) {
-            classes = await this.$api.classApi.updateClass(
-              this.schoolId,
-              this.classForm,
-              this.classID
-            );
-          } else {
-            classes = await this.$api.classApi.createClass(this.schoolId, this.classForm);
-          }
-          this.$emit("updatedClass", classes.data);
-          this.closeDialogClassForm();
-        } else {
-          if (!this.classForm.Name) {
-            this.message.Name = "Class's name is required.";
-          } else {
-            this.message.Name = "";
-          }
-          if (!this.selectRoom) {
-            this.message.Room = "Room's name is required.";
-          } else {
-            this.message.Room = "";
-          }
-        }
-      } catch (error) {
-        console.log("Error create class info", error);
+    }
+    // Trainer option
+    if (data.Trainer && Object.keys(data.Trainer).length > 0) {
+      selectTrainer.value = {
+        Value: data.Trainer ? data.Trainer.Name : '',
+        ID: data.Trainer ? data.Trainer.Id : ''
       }
-    },
-    /**
-     *
-     * Trainer
-     */
-    onClickCreateTrainer(value) {
-      this.$refs.refToChildTrainerForm.openDialogTrainerForm();
-      this.$refs.refToChildTrainerForm.onlyUpdateTrainer({ FirstName: value });
-    },
-    async listTrainers() {
-      let trainers = await this.$api.trainer.listTrainers(this.schoolId);
-      if (trainers && trainers.data.length > 0) {
-        this.trainerOptions = trainers.data.map((trainer) => {
-          return {
-            Value: `${trainer.LastName} ${trainer.FirstName}`,
-            ID: trainer.TRAINERS_ID,
-          };
-        });
+    }
+  }
+}
+const createClassInfo = async () => {
+  try {
+    if (classForm.value.Name && selectRoom.value && Object.keys(selectRoom.value).length > 0) {
+      classForm.value = {
+        ...classForm.value,
+        Trainer: { Name: selectTrainer.value.Value, Id: selectTrainer.value.ID },
+        Room: { Name: selectRoom.value.Value, Id: selectRoom.value.ID }
       }
-    },
-    updatedTrainer(trainer) {
-      if (trainer && Object.keys(trainer).length > 0) {
-        this.selectTrainer = {
-          Value: `${trainer.LastName} ${trainer.FirstName}`,
-          ID: trainer.TRAINERS_ID,
-        };
+      let classes = {}
+      if (classID.value) {
+        classes = await $api.class.updateClass(schoolId, classForm.value, classID.value)
+      } else {
+        classes = await $api.class.createClass(schoolId, classForm.value)
       }
-      this.listTrainers();
-    },
-    /**
-     *
-     * Room
-     */
-    onClickCreateRoom(value) {
-      this.$refs.refToChildRoomForm.openDialogRoomForm();
-      this.$refs.refToChildRoomForm.onlyUpdateRoom({ Name: value });
-    },
-    updatedRoom(room) {
-      if (room && Object.keys(room).length > 0 && !room.CloseDialog) {
-        this.selectRoom = { Value: room.Name, ID: room.ROOMS_ID };
+      instance.emit('updatedClass', classes.data)
+      closeDialogClassForm()
+    } else {
+      if (!classForm.value.Name) {
+        message.value.Name = "Class's name is required."
+      } else {
+        message.value.Name = ''
       }
-      this.listRooms();
-    },
-    async listRooms() {
-      try {
-        let rooms = await this.$api.room.listRooms(this.schoolId);
-        if (rooms && rooms.data.length > 0) {
-          this.roomOptions = rooms.data.map((room) => {
-            return { Value: `${room.Name}`, ID: room.ROOMS_ID };
-          });
-        }
-      } catch (error) {
-        console.log("Form class list room error", error);
+      if (!selectRoom.value) {
+        message.value.Room = "Room's name is required."
+      } else {
+        message.value.Room = ''
       }
-    },
-    /**
-     * Clear value variable
-     */
-    setDefaultValue() {
-      this.classForm = {};
-      this.message = {};
-      this.classID = "";
-      this.footer_label = "";
-      this.selectRoom = "";
-      this.selectTrainer = "";
-    },
-  },
-};
+    }
+  } catch (error) {
+    console.log('Error create class info', error)
+  }
+}
+/**
+ *
+ * Trainer
+ */
+const onClickCreateTrainer = (value) => {
+  refToChildTrainerForm.value.openDialogTrainerForm()
+  refToChildTrainerForm.value.onlyUpdateTrainer({ FirstName: value })
+}
+const listTrainers = async () => {
+  let trainers = await $api.trainer.listTrainers(schoolId)
+  if (trainers && trainers.data.length > 0) {
+    trainerOptions.value = trainers.data.map((trainer) => {
+      return {
+        Value: `${trainer.LastName} ${trainer.FirstName}`,
+        ID: trainer.TRAINERS_ID
+      }
+    })
+  }
+}
+const updatedTrainer = (trainer) => {
+  if (trainer && Object.keys(trainer).length > 0) {
+    selectTrainer.value = {
+      Value: `${trainer.LastName} ${trainer.FirstName}`,
+      ID: trainer.TRAINERS_ID
+    }
+  }
+  listTrainers()
+}
+/**
+ *
+ * Room
+ */
+const onClickCreateRoom = (value) => {
+  refToChildRoomForm.value.openDialogRoomForm()
+  refToChildRoomForm.value.onlyUpdateRoom({ Name: value })
+}
+const updatedRoom = (room) => {
+  if (room && Object.keys(room).length > 0 && !room.CloseDialog) {
+    selectRoom.value = { Value: room.Name, ID: room.ROOMS_ID }
+  }
+  listRooms()
+}
+const listRooms = async () => {
+  try {
+    let rooms = await $api.room.listRooms(schoolId)
+    if (rooms && rooms.data.length > 0) {
+      roomOptions.value = rooms.data.map((room) => {
+        return { Value: `${room.Name}`, ID: room.ROOMS_ID }
+      })
+    }
+  } catch (error) {
+    console.log('Form class list room error', error)
+  }
+}
+/**
+ * Clear value variable
+ */
+const setDefaultValue = () => {
+  classForm.value = {}
+  message.value = {}
+  classID.value = ''
+  footerLabel.value = ''
+  selectRoom.value = ''
+  selectTrainer.value = ''
+}
+defineExpose({
+  openDialogClassForm, onlyUpdateClasses
+})
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

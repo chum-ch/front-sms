@@ -1,172 +1,169 @@
+<script setup>
+import TrainerForm from './TrainerForm.vue'
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+defineEmits([''])
+onMounted( async() => {
+ await getListTrainers()
+})
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+const schoolBc = $globalFunction.getDataLs('schoolBc')
+const breadCrumb = ref([])
+if (!schoolBc) {
+  route.push('/')
+} else {
+  breadCrumb.value.push(
+    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
+    { route: `/schools/${schoolId}/rooms`, label: 'Rooms' }
+  )
+}
+const refToChildCustomTable = ref()
+const refToChildTrainerForm = ref()
+const refToChildCustomDialogDeleteTrainer = ref()
+// Functions
+
+// Exam
+const examSections = {}
+// Checkbox
+const gender = ''
+const checkBoxCategories = [
+  {
+    Value: 'Male'
+  },
+  {
+    Value: 'Female',
+    Disable: true
+  }
+]
+// Bread Crumb
+// Table
+const selectedTrainers = ref([])
+const tableDataTrainers = ref([])
+const columnsTrainer = ref([
+  {
+    field: 'LastName',
+    header: 'Last name'
+  },
+  {
+    field: 'FirstName',
+    header: 'First name'
+  },
+  {
+    field: 'Gender.Value',
+    header: 'Gender'
+  },
+  {
+    field: 'Phone',
+    header: 'Phone'
+  },
+  {
+    field: 'Email',
+    header: 'Email'
+  },
+  {
+    field: 'Province',
+    header: 'Province'
+  }
+])
+
+const onClickCreateTrainer = () => {
+  refToChildTrainerForm.value.openDialogTrainerForm()
+}
+const onClickEditTrainer = () => {
+  refToChildTrainerForm.value.openDialogTrainerForm()
+  refToChildTrainerForm.value.onlyUpdateTrainer(selectedTrainers.value[0])
+}
+const onClickDetailsTrainer = (event) => {
+  console.log(event)
+  // $router.push(`/trainers/${event[0].trainersID}`);
+}
+const unSelectRowTrainer = () => {
+  refToChildCustomTable.value.unSelectedAllRows()
+}
+const selectedRowData = (data) => {
+  selectedTrainers.value = data
+}
+const getListTrainers = async () => {
+  try {
+    let trainers = await $api.trainer.listTrainers(schoolId)
+    if (trainers && trainers.data && trainers.data.length > 0) {
+      tableDataTrainers.value = trainers.data
+    } else {
+      tableDataTrainers.value = []
+    }
+    unSelectRowTrainer()
+  } catch (error) {
+    console.log('Error list trainer', error)
+  }
+}
+const updatedTrainer = () => {
+  getListTrainers()
+}
+// Delete trainer
+const openDialogDeleteTrainer = () => {
+  refToChildCustomDialogDeleteTrainer.value.openDialog()
+}
+const closeDialogDeleteTrainer = () => {
+  refToChildCustomDialogDeleteTrainer.value.closeDialog()
+  unSelectRowTrainer()
+}
+const deleteTrainer = async (selectedTrainers) => {
+  for (let item of selectedTrainers) {
+    await $api.trainer.deleteTrainer(schoolId, item.TRAINERS_ID)
+  }
+  closeDialogDeleteTrainer()
+  getListTrainers()
+}
+defineExpose({ getListTrainers })
+</script>
+
 <template>
   <div>
     <!-- Navigation with breadCrum  -->
-    <custom-navigation :breadCrumb="breadCrumb" />
-    
-    
+    <NavigationView :breadCrumb="breadCrumb" />
+
     <div v-show="true">
       <!-- Table  -->
-      <custom-table
+      <CustomTable
         ref="refToChildCustomTable"
-        :table_data="tableDataTrainers"
+        :tableData="tableDataTrainers"
         :columns="columnsTrainer"
-        @selected-row-data="selectedRowData"
+        @update:selection="selectedRowData"
         @onClickCreate="onClickCreateTrainer"
         @onClickEdit="onClickEditTrainer"
         @onClickDelete="openDialogDeleteTrainer"
-        @onClickDetails="onClickDetailsTrainer"
       />
     </div>
-    <!-- Chil trainer form  -->
+    <!-- Child trainer form  -->
     <TrainerForm ref="refToChildTrainerForm" @updatedTrainer="updatedTrainer" />
     <!-- Dialog delete trainer  -->
-    <custom-dialog
+    <CustomDialog
       ref="refToChildCustomDialogDeleteTrainer"
-      @onClickDialogSubmit="deleteTrainer()"
+      @onClickDialogSubmit="deleteTrainer(selectedTrainers)"
       :danger="true"
       @onClickCloseDialog="closeDialogDeleteTrainer()"
-      :is_delete="true"
-      :footer_label="'Delete'"
-      :modal_header="'Delete Trainer'"
+      :isDelete="true"
+      :footerLabel="'Delete'"
+      :modalHeader="'Delete Trainer'"
     >
       <template #bodyDialog>
         <div class="text-center mt-4">
           You was selected {{ selectedTrainers.length }} to delete.
         </div>
       </template>
-    </custom-dialog>
+    </CustomDialog>
   </div>
 </template>
-<script>
-import TrainerForm from "./TrainerForm.vue";
-
-export default {
-  components: {
-    TrainerForm,
-  },
-  data() {
-    return {
-      // Exam 
-      examSections: {},
-      // Checkbox
-      gender: "",
-      checkBoxCategories: [
-        {
-          Value: "Male",
-        },
-        {
-          Value: "Female",
-          Disable: true,
-        },
-      ],
-      schoolId: this.$route.params.schoolId,
-      // Bread Crumb
-      breadCrumb: [],
-      // Table
-      selectedTrainers: [],
-      tableDataTrainers: [],
-      columnsTrainer: [
-        {
-          field: "LastName",
-          header: "Last name",
-        },
-        {
-          field: "FirstName",
-          header: "First name",
-        },
-        {
-          field: "Gender",
-          header: "Gender",
-        },
-        {
-          field: "Phone",
-          header: "Phone",
-        },
-        {
-          field: "Email",
-          header: "Email",
-        },
-        {
-          field: "Province",
-          header: "Province",
-        },
-      ],
-    };
-  },
-  props: {},
-  watch: {
-    something() {
-      console.log("items", this.something);
-    },
-  },
-  created() {
-    this.getSchoolDetails(this.schoolId);
-  },
-  methods: {
-    onClickCreateTrainer() {
-      this.$refs.refToChildTrainerForm.openDialogTrainerForm();
-    },
-    onClickEditTrainer() {
-      this.$refs.refToChildTrainerForm.openDialogTrainerForm();
-      this.$refs.refToChildTrainerForm.onlyUpdateTrainer(this.selectedTrainers[0]);
-    },
-    onClickDetailsTrainer(event) {
-      console.log(event);
-      // this.$router.push(`/trainers/${event[0].trainersID}`);
-    },
-    unSelecteRowTrainer() {
-      this.$refs.refToChildCustomTable.unSelectedAllRows();
-    },
-    selectedRowData(data) {
-      this.selectedTrainers = data;
-    },
-    async getSchoolDetails(schoolId) {
-      let school = await this.$api.school.getSchool(schoolId);
-      if (school && school.data && Object.keys(school.data).length > 0) {
-        this.breadCrumb = [];
-        this.breadCrumb.push(
-          { label: `${school.data.Name}`, to: "/" },
-          { label: "Manages", to: `/schools/${schoolId}/manages` },
-          { label: "Trainers", to: `/schools/${schoolId}/trainers` }
-        );
-        this.getListTrainers();
-      }
-    },
-    async getListTrainers() {
-      try {
-        
-        let trainers = await this.$api.trainer.listTrainers(this.schoolId);
-        if (trainers && trainers.data && trainers.data.length > 0) {
-          this.tableDataTrainers = trainers.data;
-        } else {
-          this.tableDataTrainers = [];
-        }
-        this.unSelecteRowTrainer();
-      } catch (error) {
-        console.log("Error list trainer", error);
-      }
-    },
-    updatedTrainer() {
-      this.getSchoolDetails(this.schoolId);
-    },
-    // Delete trainer
-    openDialogDeleteTrainer() {
-      this.$refs.refToChildCustomDialogDeleteTrainer.openDialog();
-    },
-    closeDialogDeleteTrainer() {
-      this.$refs.refToChildCustomDialogDeleteTrainer.closeDialog();
-      this.unSelecteRowTrainer();
-    },
-    async deleteTrainer() {
-      for (let item of this.selectedTrainers) {
-        await this.$api.trainer.deleteTrainer(this.schoolId, item.TRAINERS_ID);
-      }
-      this.closeDialogDeleteTrainer();
-      this.getListTrainers();
-    },
-  },
-};
-</script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>
