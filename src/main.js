@@ -37,8 +37,8 @@ const app = createApp(App)
 
 // Config Axios
 const $api = API(axios);
-axios.defaults.baseURL = 'http://localhost:3003';
-// axios.defaults.baseURL = 'https://svc-sms.onrender.com';
+// axios.defaults.baseURL = 'http://localhost:3003';
+axios.defaults.baseURL = 'https://svc-sms.onrender.com';
 // Register component
 // Primevue
 app.component('PrimeVueButton', Button);
