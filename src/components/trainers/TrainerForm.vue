@@ -27,6 +27,9 @@ const trainerForm = ref({
   Phone: '',
   Gender: ''
 })
+const gender = ref({
+    Value: 'Male'
+  })
 const radioButtonOptionTrainer = ref([
   {
     Value: 'Male'
@@ -35,7 +38,6 @@ const radioButtonOptionTrainer = ref([
     Value: 'Female'
   }
 ])
-const gender = ref(radioButtonOptionTrainer.value[0])
 
 // Error message
 const message = ref({
@@ -45,18 +47,6 @@ const message = ref({
 })
 // Dialog
 const footerLabel = ref('')
-const getDataRadio = (data) => {
-  console.log('a', data);
-  gender.value = data
-  // Check if the value already exists in the array
-  const opt = radioButtonOptionTrainer.value
-const exists = opt.some(item => item.Value === gender.value.Value);
-
-// Push the new value only if it doesn't already exist
-if (!exists) {
-  radioButtonOptionTrainer.value.push(gender.value);
-}
-}
 const openDialogTrainerForm = () => {
   refToChildCustomDialog.value.openDialog()
 }
@@ -69,7 +59,7 @@ const onlyUpdateTrainer = (data = {}) => {
     trainerForm.value.FirstName = data.FirstName
     trainerForm.value.LastName = data.LastName
     trainerForm.value.Email = data.Email
-    console.log(gender.value)
+    gender.value = data.Gender
     trainerForm.value.Province = data.Province
     trainerForm.value.Phone = data.Phone
     // Get trainer ID
@@ -77,7 +67,6 @@ const onlyUpdateTrainer = (data = {}) => {
     if (trainerID.value) {
       footerLabel.value = 'Update'
     }
-    getDataRadio(data)
   }
 }
 
@@ -114,7 +103,7 @@ const setDefaultValue = () => {
   message.value = {}
   trainerID.value = ''
   footerLabel.value = ''
-  getDataRadio(radioButtonOptionTrainer.value[0])
+  gender.value = {};
 }
 defineExpose({ openDialogTrainerForm, onlyUpdateTrainer })
 </script>
@@ -122,7 +111,7 @@ defineExpose({ openDialogTrainerForm, onlyUpdateTrainer })
 <template>
   <div class="trainer-form">
     <!-- Dialog trainer form  -->
-    <custom-dialog
+    <CustomDialog
       ref="refToChildCustomDialog"
       :modalHeader="'Trainer Form'"
       @onClickDialogSubmit="createTrainerInfo"
@@ -179,16 +168,15 @@ defineExpose({ openDialogTrainerForm, onlyUpdateTrainer })
           class=""
         />
         <CustomRadioButton
-          v-model="gender"
-          :label="'Gender'"
-          :categories="radioButtonOptionTrainer"
-          :isFlex="true"
-          class="col-12"
-          :modelValue="gender"
-
-        />
+            v-model="gender"
+            :label="'Gender'"
+            :defaultValue="gender"
+            :isFlex="true"
+            class=""
+            :categories="radioButtonOptionTrainer"
+          />
       </template>
-    </custom-dialog>
+    </CustomDialog>
   </div>
 </template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->

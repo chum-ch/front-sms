@@ -14,12 +14,12 @@
         :showButtons="isShowButtons"
         @update:modelValue="updateModelValue"
         @input="getValue"
-        class="p-0"
-        :class="required && message_error !== '' ? p_invalid : ''"
+        class=""
+        :class="required && messageError !== '' ? p_invalid : ''"
       />
-      <small v-if="message_error !== ''" class="flex text-red-500">
-        {{ message_error }}
-        <i :class="message_error ? 'pi pi-info-circle' : ''" style="margin: 2px" />
+      <small v-if="messageError !== ''" class="flex text-red-500">
+        {{ messageError }}
+        <i :class="messageError ? 'pi pi-info-circle' : ''" style="margin: 2px" />
       </small>
     </section>
   </div>
@@ -36,7 +36,7 @@ export default {
     return {
       values: "",
       p_invalid: '',
-      // message_error: this.message_error,
+      // messageError: this.messageError,
       decimalDigit: null,
     };
   },
@@ -46,14 +46,14 @@ export default {
     required: Boolean,
     placeholder: String,
     modelValue: [String, Date, Number],
-    message_error: String,
+    messageError: String,
     isShowButtons: Boolean,
     isDecimal: Boolean,
     // decimalDigit: Number
   },
   emits: ["update:modelValue"],
   watch: {
-    message_error: {
+    messageError: {
       immediate: true,
       handler(data) {
         if (data) {

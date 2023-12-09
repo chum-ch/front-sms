@@ -1,141 +1,137 @@
+<script setup>
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import CourseForm from './CourseForm.vue'
+onMounted(async () => {
+  await getListCourses()
+})
+defineEmits([''])
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+const schoolBc = $globalFunction.getDataLs('schoolBc')
+const breadCrumb = ref([])
+const refToChildCourseForm = ref()
+const refToChildCustomTable = ref()
+const refToChildCustomDialogDeleteCourseForm = ref()
+if (!schoolBc) {
+  route.push('/')
+} else {
+  breadCrumb.value.push(
+    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
+    { route: `/schools/${schoolId}/courses`, label: 'Courses' }
+  )
+}
+// Functions
+// Table
+const selectedCourses = ref([])
+const tableDataCourses = ref([])
+const columnsCourse = ref([
+  {
+    field: 'Name',
+    header: 'Course name'
+  },
+  {
+    field: 'Credit',
+    header: 'Credit(h)'
+  }
+  // {
+  //   field: "Class.Name",
+  //   header: "Class",
+  // },
+])
+const onClickCreateCourse = () => {
+  refToChildCourseForm.value.openDialogCourseForm()
+}
+const onClickEditCourse = () => {
+  refToChildCourseForm.value.openDialogCourseForm()
+  refToChildCourseForm.value.onlyUpdateCourse(selectedCourses.value[0])
+}
+const onClickDetailsCourse = (event) => {
+  console.log('Details', event)
+}
+const unSelectRowCourse = () => {
+  refToChildCustomTable.value.unSelectedAllRows()
+}
+
+const selectedRowData = (data) => {
+  selectedCourses.value = data
+}
+const getListCourses = async () => {
+  try {
+    let courses = await $api.course.listCourses(schoolId)
+    if (courses && courses.data && courses.data.length > 0) {
+      tableDataCourses.value = courses.data
+    } else {
+      tableDataCourses.value = []
+    }
+    unSelectRowCourse()
+  } catch (error) {
+    console.log('Error list course', error)
+  }
+}
+const updatedCourse = async () => {
+  await getListCourses()
+}
+const deleteCourse = async (selectedCourses) => {
+  for (let item of selectedCourses) {
+    await $api.course.deleteCourse(schoolId, item.COURSES_ID)
+  }
+  closeDialogDeleteCourse()
+  getListCourses()
+}
+const openDialogDeleteCourse = () => {
+  refToChildCustomDialogDeleteCourseForm.value.openDialog()
+}
+const closeDialogDeleteCourse = () => {
+  refToChildCustomDialogDeleteCourseForm.value.closeDialog()
+  unSelectRowCourse()
+}
+defineExpose({})
+</script>
+
 <template>
   <div>
-    <!-- Navigation with breadCrum  -->
-    <custom-navigation :breadCrumb="breadCrumb" />
+    <NavigationView :breadCrumb="breadCrumb" />
     <div v-show="true">
       <!-- Table  -->
-      <custom-table
+      <CustomTable
         ref="refToChildCustomTable"
-        :table_data="tableDataCourses"
+        :tableData="tableDataCourses"
         :columns="columnsCourse"
-        @selected-row-data="selectedRowData"
+        @update:selection="selectedRowData"
         @onClickCreate="onClickCreateCourse"
         @onClickEdit="onClickEditCourse"
         @onClickDelete="openDialogDeleteCourse"
         @onClickDetails="onClickDetailsCourse"
       />
     </div>
-    <!-- Chil course form  -->
-    <CourseForm
-      ref="refToChildCoursForm"
-      @updatedCourse="updatedCourse"
-    />
+    <!-- Child course form  -->
+    <CourseForm ref="refToChildCourseForm" @updatedCourse="updatedCourse" />
     <!-- Dialog delete course  -->
-    <custom-dialog
+    <CustomDialog
       ref="refToChildCustomDialogDeleteCourseForm"
-      @onClickDialogSubmit="deleteCourse()"
-      :danger="true"
+      @onClickDialogSubmit="deleteCourse(selectedCourses)"
       @onClickCloseDialog="closeDialogDeleteCourse()"
-      :is_delete="true"
-      :footer_label="'Delete'"
-      :modal_header="'Delete Course'"
+      :danger="true"
+      :modalHeader="'Delete Course'"
+      :isDelete="true"
+      :footerLabel="'Delete'"
     >
       <template #bodyDialog>
-        <div class="text-center mt-4">
-          You was selected {{ selectedCourses.length }} to delete.
-        </div>
+        <div class="text-center mt-4">You was selected {{ selectedCourses.length }} to delete.</div>
       </template>
-    </custom-dialog>
+    </CustomDialog>
   </div>
 </template>
-<script>
-import CourseForm from "./CourseForm.vue";
-export default {
-  components: {
-    CourseForm,
-  },
-  data() {
-    return {
-      schoolId: this.$route.params.schoolId,
-      // Bread Crumb
-      breadCrumb: [],
-      // Table
-      selectedCourses: [],
-      tableDataCourses: [],
-      columnsCourse: [
-        {
-          field: "Name",
-          header: "Course name",
-        },
-        {
-          field: "Credit",
-          header: "Credit(h)",
-        },
-        // {
-        //   field: "Class.Name",
-        //   header: "Class",
-        // },
-      ],
-    };
-  },
-  props: {},
-  watch: {},
-  created() {
-    this.getSchoolDetails(this.schoolId);
-  },
-  methods: {
-    onClickCreateCourse() {
-      this.$refs.refToChildCoursForm.openDialogCourseForm();
-    },
-    onClickEditCourse() {
-      this.$refs.refToChildCoursForm.openDialogCourseForm();
-      this.$refs.refToChildCoursForm.onlyUpdateCourse(this.selectedCourses[0]);
-    },
-    onClickDetailsCourse(event) {
-      console.log("Details", event);
-    },
-    unSelecteRowCourse() {
-      this.$refs.refToChildCustomTable.unSelectedAllRows();
-    },
-
-    selectedRowData(data) {
-      this.selectedCourses = data;
-    },
-    async getSchoolDetails(schoolId) {
-      let school = await this.$api.school.getSchool(schoolId);
-      if (school && school.data && Object.keys(school.data).length > 0) {
-        this.breadCrumb = [];
-        this.breadCrumb.push(
-          { label: `${school.data.Name}`, to: "/" },
-          { label: "Manages", to: `/schools/${schoolId}/manages` },
-          { label: "Courses", to: `/schools/${schoolId}/courses` }
-        );
-        this.getListCourses();
-      }
-    },
-    async getListCourses() {
-      try {
-        let courses = await this.$api.course.listCourses(this.schoolId);
-        if (courses && courses.data && courses.data.length > 0) {
-          this.tableDataCourses = courses.data
-        } else {
-          this.tableDataCourses = [];
-        }
-        this.unSelecteRowCourse();
-      } catch (error) {
-        console.log("Error list course", error);
-      }
-    },
-    updatedCourse() {
-      this.getSchoolDetails(this.schoolId);
-    },
-    async deleteCourse() {
-      for (let item of this.selectedCourses) {
-        await this.$api.course.deleteCourse(this.schoolId, item.COURSES_ID);
-      }
-      this.closeDialogDeleteCourse();
-      this.getListCourses();
-    },
-    openDialogDeleteCourse() {
-      this.$refs.refToChildCustomDialogDeleteCourseForm.openDialog();
-    },
-    closeDialogDeleteCourse() {
-      this.$refs.refToChildCustomDialogDeleteCourseForm.closeDialog();
-      this.unSelecteRowCourse();
-    },
-  },
-};
-</script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>

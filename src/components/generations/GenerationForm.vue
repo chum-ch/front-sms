@@ -1,110 +1,111 @@
 <template>
   <div class="hello">
     <!-- Dialog generation form  -->
-    <custom-dialog
+    <CustomDialog
       ref="dialogGenerationForm"
-      :modal_header="'Generation Form'"
+      :modalHeader="'Generation Form'"
       @onClickDialogSubmit="createGenerationInfo"
       @onClickCloseDialog="closeDialogGenerationForm"
-      :footer_label="footer_label"
+      :footerLabel="footerLabel"
     >
       <template #bodyDialog>
-        <custom-input-text
+        <CustomInputText
           :placeholder="'.......'"
           :label="'Generation name'"
           v-model="generationForm.Name"
           :required="true"
-          :message_error="message.Name"
+          :messageError="message.Name"
           class="py-0"
         />
       </template>
-    </custom-dialog>
+    </CustomDialog>
   </div>
 </template>
 
-<script>
-export default {
-  components: {},
-  data() {
-    return {
-      schoolId: this.$route.params.schoolId,
-      // Form generation
-      generationID: "",
-      generationForm: {
-        Name: "",
-      },
-      
-      // Error message
-      message: {
-        Name: "",
-      },
-      // Dialog
-      footer_label: "",
-    };
-  },
-  props: {
-    msg: String,
-  },
-  emits: ["updatedGeneration"],
-  watch: {},
-  updated() {},
-  created() {},
-  methods: {
-    openDialogGenerationForm() {
-      this.$refs.dialogGenerationForm.openDialog();
-    },
-    closeDialogGenerationForm() {
-      this.footer_label = "";
-      this.$refs.dialogGenerationForm.closeDialog();
-      this.setDefaultValue();
-    },
-    onlyUpdateGeneration(data = {}) {
-      if (data && Object.keys(data).length > 0) {
-        this.generationForm.Name = data.Name;
-        this.generationForm.Floor = data.Floor;
-        // Get generationID
-        this.generationID = data.GENERATIONS_ID;
-        if (this.generationID) {
-          this.footer_label = "Edit";
-        }
+<script setup>
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(() => {})
+defineEmits(['updatedGeneration'])
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+const dialogGenerationForm = ref()
+// Functions
+// Form generation
+const generationID = ref()
+const generationForm = ref({
+  Name: ''
+})
+
+// Error message
+const message = ref({
+  Name: ''
+})
+// Dialog
+const footerLabel = ref('')
+
+const openDialogGenerationForm = () => {
+  dialogGenerationForm.value.openDialog()
+}
+const closeDialogGenerationForm = () => {
+  footerLabel.value = ''
+  dialogGenerationForm.value.closeDialog()
+  setDefaultValue()
+}
+const onlyUpdateGeneration = (data = {}) => {
+  if (data && Object.keys(data).length > 0) {
+    generationForm.value.Name = data.Name
+    generationForm.value.Floor = data.Floor
+    // Get generationID
+    generationID.value = data.GENERATIONS_ID
+    if (generationID.value) {
+      footerLabel.value = 'Update'
+    }
+  }
+}
+const createGenerationInfo = async () => {
+  try {
+    if (generationForm.value.Name) {
+      let generation = {}
+      if (generationID.value) {
+        generation = await $api.generation.updateGeneration(
+          schoolId,
+          generationForm.value,
+          generationID.value
+        )
+      } else {
+        generation = await $api.generation.createGeneration(schoolId, generationForm.value)
       }
-    },
-    async createGenerationInfo() {
-      try {
-        if (this.generationForm.Name) {
-          let generation = {};
-          if (this.generationID) {
-            generation = await this.$api.generation.updateGeneration(
-              this.schoolId,
-              this.generationForm,
-              this.generationID
-            );
-          } else {
-            console.log('g', this.generationForm);
-            generation = await this.$api.generation.createGeneration(this.schoolId, this.generationForm);
-            console.log('dfdf',generation);
-          }
-          this.$emit("updatedGeneration", generation.data);
-          this.closeDialogGenerationForm();
-        } else {
-          if (!this.generationForm.Name) {
-            this.message.Name = "Generation's name is required.";
-          } else {
-            this.message.Name = "";
-          }
-        }
-      } catch (error) {
-        console.log("Error create generation info", error);
+      instance.emit('updatedGeneration', generation.data)
+      closeDialogGenerationForm()
+    } else {
+      if (!generationForm.value.Name) {
+        message.value.Name = "Generation's name is required."
+      } else {
+        message.value.Name = ''
       }
-    },
-    setDefaultValue() {
-      this.generationForm = {};
-      this.message = {};
-      this.generationID = "";
-      this.footer_label = "";
-    },
-  },
-};
+    }
+  } catch (error) {
+    console.log('Error create generation info', error)
+  }
+}
+const setDefaultValue = () => {
+  generationForm.value = {}
+  message.value = {}
+  generationID.value = ''
+  footerLabel.value = ''
+}
+defineExpose({ openDialogGenerationForm, onlyUpdateGeneration })
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -9,8 +9,8 @@ import RoomsRouter from '../components/rooms/route';
 import StudentsRouter from '../components/students/route';
 // import CleanersRouter from '../components/cleaners/route';
 // import SchedulesRouter from '../components/schedules/route';
-// import CoursesRouter from '../components/courses/route';
-// import GenerationsRouter from '../components/generations/route';
+import CoursesRouter from '../components/courses/route';
+import GenerationsRouter from '../components/generations/route';
 // import ExamsRouter from '../components/exams/route';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,8 +22,8 @@ const router = createRouter({
   ...StudentsRouter,
   // ...CleanersRouter,
   // ...SchedulesRouter,
-  // ...CoursesRouter,
-  // ...GenerationsRouter,
+  ...CoursesRouter,
+  ...GenerationsRouter,
   // ...ExamsRouter,
     {
       path: '/hello',

@@ -1,179 +1,162 @@
 <template>
   <div>
-    <!-- Navigation with breadCrum  -->
-    <custom-navigation :breadCrumb="breadCrumb" />
+    <NavigationView :breadCrumb="breadCrumb" />
     <div v-show="true">
       <!-- Table  -->
-      <custom-table
+      <CustomTable
         ref="refToChildCustomTable"
-        :table_data="tableDataStudents"
+        :tableData="tableDataStudents"
         :columns="columnsStudent"
-        @selected-row-data="selectedRowData"
+        @update:selection="selectedRowData"
         @onClickCreate="onClickCreateStudent"
         @onClickEdit="onClickEditStudent"
         @onClickDelete="onClickDeleteStudent"
-        @onClickDetails="onClickDetailsStudent"
       />
+        <!-- @onClickDetails="onClickDetailsStudent" -->
       <!-- Child student form  -->
       <StudentForm ref="refToChildStudentForm" @updatedStudent="updatedStudent" />
 
       <!-- Dialog delete student  -->
-      <custom-dialog
+      <CustomDialog
         ref="refToChildCustomDialogDeleteStudent"
-        @onClickDialogSubmit="deleteStudent"
+        @onClickDialogSubmit="deleteStudent(selectedStudent)"
         :danger="true"
         @onClickCloseDialog="closeDialogDeleteStudent"
-        :is_delete="true"
-        :footer_label="'Delete'"
-        :modal_header="'Delete Student'"
+        :isDelete="true"
+        :footerLabel="'Delete'"
+        :modalHeader="'Delete Student'"
       >
         <template #bodyDialog>
           <div class="text-center mt-4">
             You was selected {{ selectedStudent.length }} to delete.
           </div>
         </template>
-      </custom-dialog>
+      </CustomDialog>
     </div>
     <div></div>
   </div>
 </template>
-<script>
-import StudentForm from "./StudentForm.vue";
-export default {
-  components: {
-    StudentForm,
-  },
-  data() {
-    return {
-      // Bread Crumb
-      breadCrumb: [],
-      // Table
-      schoolId: this.$route.params.schoolId,
-      generationId: this.$route.params.generationId,
-      selectedStudent: [],
-      tableDataStudents: [],
-      columnsStudent: [
-        {
-          field: "ProfileURL",
-          header: "Profile",
-        },
-        {
-          field: "ID",
-          header: "Student's ID",
-        },
-        {
-          field: "LastName",
-          header: "Last name",
-        },
-        {
-          field: "FirstName",
-          header: "First name",
-        },
-        {
-          field: "Gender",
-          header: "Gender",
-        },
-        {
-          field: "Email",
-          header: "Email",
-        },
-        {
-          field: "Class.Name",
-          header: "Class",
-        },
-      ],
-    };
-  },
-  props: [],
-  emits: [],
-  watch: {},
-  created() {
-    this.getSchoolDetails(this.schoolId);
-  },
-  methods: {
-    onClickCreateStudent() {
-      this.$refs.refToChildStudentForm.openDialogStudentForm();
-    },
-    onClickEditStudent() {
-      this.$refs.refToChildStudentForm.openDialogStudentForm();
-      this.$refs.refToChildStudentForm.onlyUpdateStudent(this.selectedStudent[0]);
-    },
-    onClickDetailsStudent(event) {
-      
-      this.$router.push(`students/${event[0].STUDENTS_ID}`);
-    },
-    unSelecteRowStudent() {
-      this.$refs.refToChildCustomTable.unSelectedAllRows();
-    },
-    selectedRowData(data) {
-      this.selectedStudent = data;
-    },
+<script setup>
+import StudentForm from './StudentForm.vue'
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(async () => {
+  await getListStudent()
+})
+defineEmits([''])
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+const generationId = route.currentRoute.value.params.generationId
+const schoolBc = $globalFunction.getDataLs('schoolBc')
+const generationBc = $globalFunction.getDataLs('generationBc')
+const breadCrumb = ref([])
+if (!schoolBc || !generationBc) {
+  route.push('/')
+} else {
+  breadCrumb.value.push(
+    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
+    { route: `/schools/${schoolId}/generations`, label: 'Generations' },
+    {
+      route: `/schools/${schoolId}/generations/${generationBc.GENERATION_ID}/students`,
+      label: 'Students'
+    }
+  )
+}
+// Functions
+const selectedStudent = ref([])
+const tableDataStudents = ref([])
+const refToChildStudentForm = ref();
+const refToChildCustomTable = ref()
+const refToChildCustomDialogDeleteStudent = ref()
 
-    async getSchoolDetails(schoolId) {
-      let school = await this.$api.school.getSchool(schoolId);
-      if (school && school.data && Object.keys(school.data).length > 0) {
-        school = school.data;
-      }
-      let generation = await this.$api.generation.getGeneration(
-        this.schoolId,
-        this.generationId
-      );
-      if (generation && generation.data && Object.keys(generation.data).length > 0) {
-        generation = generation.data;
-      }
-      this.breadCrumb =
-        [{ label: `${school.Name}`, to: "/" },
-        { label: "Manages", to: `/schools/${schoolId}/manages` },
-        {
-          label: `${generation.Name}`,
-          to: `/schools/${schoolId}/generations`,
-        },
-        {
-          label: "Students",
-          to: `/schools/${this.schoolId}/generations/${this.generationId}/students`,
-        }
-      ]
-      this.getListStudent();
-    },
-
-    async getListStudent() {
-      try {
-        let students = await this.$api.student.listStudents(
-          this.schoolId,
-          this.generationId
-        );
-        if (students && students.data && students.data.length > 0) {
-          this.tableDataStudents = students.data;
-        } else {
-          this.tableDataStudents = [];
-        }
-        this.unSelecteRowStudent();
-      } catch (error) {
-        console.log("Error list student", error);
-      }
-    },
-    updatedStudent() {
-      this.getSchoolDetails(this.schoolId);
-    },
-    // Delete student
-    onClickDeleteStudent() {
-      this.openDialogDeleteStudent();
-    },
-    openDialogDeleteStudent() {
-      this.$refs.refToChildCustomDialogDeleteStudent.openDialog();
-    },
-    closeDialogDeleteStudent() {
-      this.$refs.refToChildCustomDialogDeleteStudent.closeDialog();
-    },
-    async deleteStudent() {
-      for (let item of this.selectedStudent) {
-        await this.$api.student.deleteStudent(this.schoolId, this.generationId, item.STUDENTS_ID);
-      }
-      this.closeDialogDeleteStudent();
-      this.getListStudent();
-    },
+const columnsStudent = ref([
+  {
+    field: 'ID',
+    header: "Student's ID"
   },
-};
+  {
+    field: 'LastName',
+    header: 'Last name'
+  },
+  {
+    field: 'FirstName',
+    header: 'First name'
+  },
+  {
+    field: 'Gender',
+    header: 'Gender'
+  },
+  {
+    field: 'Email',
+    header: 'Email'
+  },
+  {
+    field: 'Class.Name',
+    header: 'Class'
+  }
+])
+const onClickCreateStudent = () => {
+  refToChildStudentForm.value.openDialogStudentForm()
+}
+const onClickEditStudent = () => {
+  refToChildStudentForm.value.openDialogStudentForm()
+  refToChildStudentForm.value.onlyUpdateStudent(selectedStudent.value[0])
+}
+const onClickDetailsStudent = (event) => {
+  route.push(`students/${event[0].STUDENTS_ID}`)
+}
+const unSelectRowStudent = () => {
+  refToChildCustomTable.value.unSelectedAllRows()
+}
+const selectedRowData = (data) => {
+  selectedStudent.value = data
+}
+
+const getListStudent = async () => {
+  try {
+    let students = await $api.student.listStudents(schoolId, generationId)
+    if (students && students.data && students.data.length > 0) {
+      tableDataStudents.value = students.data
+    } else {
+      tableDataStudents.value = []
+    }
+    unSelectRowStudent()
+  } catch (error) {
+    console.log('Error list student', error)
+  }
+}
+const updatedStudent = async () => {
+  await getListStudent()
+}
+// Delete student
+const onClickDeleteStudent = () => {
+  openDialogDeleteStudent()
+}
+const openDialogDeleteStudent = () => {
+  refToChildCustomDialogDeleteStudent.value.openDialog()
+}
+const closeDialogDeleteStudent = () => {
+  refToChildCustomDialogDeleteStudent.value.closeDialog()
+}
+const deleteStudent = async (selectedStudent) => {
+  for (let item of selectedStudent) {
+    await $api.student.deleteStudent(schoolId, generationId, item.STUDENTS_ID)
+  }
+  closeDialogDeleteStudent()
+  getListStudent()
+}
+
+defineExpose({})
 </script>
 <style scoped>
 * {

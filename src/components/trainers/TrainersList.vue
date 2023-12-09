@@ -25,7 +25,7 @@ if (!schoolBc) {
 } else {
   breadCrumb.value.push(
     { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
-    { route: `/schools/${schoolId}/rooms`, label: 'Rooms' }
+    { route: `/schools/${schoolId}/trainers`, label: 'Trainers' }
   )
 }
 const refToChildCustomTable = ref()

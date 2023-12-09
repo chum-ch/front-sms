@@ -1,136 +1,135 @@
 <template>
   <div>
-    <!-- Navigation with breadCrum  -->
-    <custom-navigation :breadCrumb="breadCrumb" />
+    <!-- Navigation with breadCrumb  -->
+    <NavigationView :breadCrumb="breadCrumb" />
     <div v-show="true">
       <!-- Table  -->
-      <custom-table
+      <CustomTable
         ref="refToChildCustomTable"
-        :table_data="tableDataGenerations"
+        :tableData="tableDataGenerations"
         :columns="columnsGeneration"
-        @selected-row-data="selectedRowData"
+        @update:selection="selectedRowData"
         @onClickCreate="onClickCreateGeneration"
         @onClickEdit="onClickEditGeneration"
         @onClickDelete="openDialogDeleteGeneration"
         @onClickDetails="onClickDetailsGeneration"
       />
     </div>
-    <!-- Chil generation form  -->
-    <GenerationForm
-      ref="refToChildGenerationForm"
-      @updatedGeneration="updatedGeneration"
-    />
+    <!-- Child generation form  -->
+    <GenerationForm ref="refToChildGenerationForm" @updatedGeneration="updatedGeneration" />
     <!-- Dialog delete generation  -->
-    <custom-dialog
+    <CustomDialog
       ref="refToChildCustomDialogDeleteGenerationForm"
-      @onClickDialogSubmit="deleteGeneration()"
+      @onClickDialogSubmit="deleteGeneration(selectedGenerations)"
       :danger="true"
       @onClickCloseDialog="closeDialogDeleteGeneration()"
-      :is_delete="true"
-      :footer_label="'Delete'"
-      :modal_header="'Delete Generation'"
+      :modalHeader="'Delete Generation'"
+      :isDelete="true"
+      :footerLabel="'Delete'"
     >
       <template #bodyDialog>
         <div class="text-center mt-4">
           You was selected {{ selectedGenerations.length }} to delete.
         </div>
       </template>
-    </custom-dialog>
+    </CustomDialog>
   </div>
 </template>
-<script>
-import GenerationForm from "./GenerationForm.vue";
-export default {
-  components: {
-    GenerationForm,
+<script setup>
+import GenerationForm from './GenerationForm.vue'
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(async () => {
+  await getListGenerations()
+})
+defineEmits([''])
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+const schoolBc = $globalFunction.getDataLs('schoolBc')
+const breadCrumb = ref([])
+const refToChildCustomDialogDeleteGenerationForm = ref()
+const refToChildGenerationForm = ref()
+const refToChildCustomTable = ref()
+if (!schoolBc) {
+  route.push('/')
+} else {
+  breadCrumb.value.push(
+    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
+    { route: `/schools/${schoolId}/generations`, label: 'Generations' }
+  )
+}
+// Functions
+// Table
+const selectedGenerations = ref([])
+const tableDataGenerations = ref([])
+const columnsGeneration = ref([
+  {
+    field: 'Name',
+    header: 'Generation'
   },
-  data() {
-    return {
-      schoolId: this.$route.params.schoolId,
-      // Bread Crumb
-      breadCrumb: [],
-      // Table
-      selectedGenerations: [],
-      tableDataGenerations: [],
-      columnsGeneration: [
-        {
-          field: "Name",
-          header: "Generation",
-        },
-        {
-          field: "StudentNumber",
-          header: "Number of student",
-        },
-      ],
-    };
-  },
-  props: {},
-  watch: {},
-  created() {
-    this.getSchoolDetails(this.schoolId);
-  },
-  methods: {
-    onClickCreateGeneration() {
-      this.$refs.refToChildGenerationForm.openDialogGenerationForm();
-    },
-    onClickEditGeneration() {
-      this.$refs.refToChildGenerationForm.openDialogGenerationForm();
-      this.$refs.refToChildGenerationForm.onlyUpdateGeneration(
-        this.selectedGenerations[0]
-      );
-    },
-    onClickDetailsGeneration(event) {
-      this.$router.push(`generations/${event[0].GENERATIONS_ID}/students`);
-    },
-    unSelecteRowGeneration() {
-      this.$refs.refToChildCustomTable.unSelectedAllRows();
-    },
-    selectedRowData(data) {
-      this.selectedGenerations = data;
-    },
-    async getSchoolDetails(schoolId) {
-      let school = await this.$api.school.getSchool(schoolId);
-      if (school && school.data && Object.keys(school.data).length > 0) {
-        this.breadCrumb = [
-          { label: `${school.data.Name}`, to: "/" },
-          { label: "Manages", to: `/schools/${schoolId}/manages` },
-          { label: "Generations", to: `/schools/${schoolId}/generations` },
-        ];
-        this.getListGenerations();
-      }
-    },
-    async getListGenerations() {
-      try {
-        let generations = await this.$api.generation.listGenerations(this.schoolId);
-        if (generations && generations.data && generations.data.length > 0) {
-          this.tableDataGenerations = generations.data;
-        } else {
-          this.tableDataGenerations = [];
-        }
-        this.unSelecteRowGeneration();
-      } catch (error) {
-        console.log("Error list generations", error);
-      }
-    },
-    updatedGeneration() {
-      this.getSchoolDetails(this.schoolId);
-    },
-    async deleteGeneration() {
-      for (let item of this.selectedGenerations) {
-        await this.$api.generation.deleteGeneration(this.schoolId, item.GENERATIONS_ID);
-      }
-      this.closeDialogDeleteGeneration();
-      this.getListGenerations();
-    },
-    openDialogDeleteGeneration() {
-      this.$refs.refToChildCustomDialogDeleteGenerationForm.openDialog();
-    },
-    closeDialogDeleteGeneration() {
-      this.$refs.refToChildCustomDialogDeleteGenerationForm.closeDialog();
-      this.unSelecteRowGeneration();
-    },
-  },
-};
+  {
+    field: 'StudentNumber',
+    header: 'Number of student'
+  }
+])
+const onClickCreateGeneration = () => {
+  refToChildGenerationForm.value.openDialogGenerationForm()
+}
+const onClickEditGeneration = () => {
+  refToChildGenerationForm.value.openDialogGenerationForm()
+  refToChildGenerationForm.value.onlyUpdateGeneration(selectedGenerations.value[0])
+}
+const onClickDetailsGeneration = (event) => {
+  $globalFunction.setDataLs('generationBc', event[0])
+  route.push(`generations/${event[0].GENERATIONS_ID}/students`)
+}
+const unSelectRowGeneration = () => {
+  refToChildCustomTable.value.unSelectedAllRows()
+}
+const selectedRowData = (data) => {
+  selectedGenerations.value = data
+}
+const getListGenerations = async () => {
+  try {
+    let generations = await $api.generation.listGenerations(schoolId)
+    if (generations && generations.data && generations.data.length > 0) {
+      tableDataGenerations.value = generations.data
+    } else {
+      tableDataGenerations.value = []
+    }
+    unSelectRowGeneration()
+  } catch (error) {
+    console.log('Error list generations', error)
+  }
+}
+const updatedGeneration = async () => {
+  await getListGenerations()
+}
+const deleteGeneration = async (selectedGenerations) => {
+  for (let item of selectedGenerations) {
+    await $api.generation.deleteGeneration(schoolId, item.GENERATIONS_ID)
+  }
+  closeDialogDeleteGeneration()
+  getListGenerations()
+}
+const openDialogDeleteGeneration = () => {
+  refToChildCustomDialogDeleteGenerationForm.value.openDialog()
+}
+const closeDialogDeleteGeneration = () => {
+  refToChildCustomDialogDeleteGenerationForm.value.closeDialog()
+  unSelectRowGeneration()
+}
+defineExpose({})
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

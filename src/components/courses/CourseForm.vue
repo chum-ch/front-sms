@@ -1,3 +1,153 @@
+<script setup>
+import ClassForm from '../classes/ClassForm.vue'
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(() => {})
+defineEmits(['updatedCourse'])
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+// Functions
+// Form course
+const courseID = ref('')
+const courseForm = ref({
+  Name: '',
+  Credit: null
+})
+// Class option
+const selectClass = ref('')
+const classesOptions = ref([])
+const dialogCourseForm = ref()
+const refToChildClassForm = ref()
+// Error message
+const message = ref({
+  Name: '',
+  Credit: ''
+})
+// Dialog
+const footerLabel = ref('')
+
+const openDialogCourseForm = () => {
+  dialogCourseForm.value.openDialog()
+  getListClasses()
+}
+const closeDialogCourseForm = () => {
+  footerLabel.value = ''
+  dialogCourseForm.value.closeDialog()
+  setDefaultValue()
+}
+const onlyUpdateCourse = (data = {}) => {
+  if (data && Object.keys(data).length > 0) {
+    courseForm.value.Name = data.Name
+    courseForm.value.Credit = data.Credit
+    courseForm.value.Floor = data.Floor
+    // Class option
+    if (data.Class && Object.keys(data.Class).length > 0) {
+      selectClass.value = {
+        Value: data.Class.Name,
+        ID: data.Class.Id,
+        Room: data.Class.Room,
+        Trainer: data.Class.Trainer
+      }
+    }
+    // Get courseID
+    courseID.value = data.COURSES_ID
+    if (courseID.value) {
+      footerLabel.value = 'Update'
+    }
+  }
+}
+const createCourseInfo = async () => {
+  try {
+    if (courseForm.value.Name && courseForm.value.Credit) {
+      let course = {}
+      courseForm.value = {
+        ...courseForm.value,
+        Class: { Name: selectClass.value.Value, Id: selectClass.value.ID }
+      }
+      if (courseID.value) {
+        course = await $api.course.updateCourse(schoolId, courseForm.value, courseID.value)
+      } else {
+        course = await $api.course.createCourse(schoolId, courseForm.value)
+      }
+      instance.emit('updatedCourse', course.data)
+      closeDialogCourseForm()
+    } else {
+      if (!courseForm.value.Name) {
+        message.value.Name = "Course's name is required"
+      } else {
+        message.value.Name = ''
+      }
+      if (!courseForm.value.Credit) {
+        message.value.Credit = 'Credit is required'
+      } else {
+        message.value.Credit = ''
+      }
+      if (!selectClass.value) {
+        message.value.Class = 'Class is required'
+      } else {
+        message.value.Class = ''
+      }
+    }
+  } catch (error) {
+    console.log('Error create course info', error)
+  }
+}
+
+/**
+ *
+ * Classes
+ */
+const onClickCreateClass = (value) => {
+  refToChildClassForm.value.openDialogClassForm()
+  refToChildClassForm.value.onlyUpdateClasses({ Name: value })
+}
+const updatedClass = (classData) => {
+  if (classData && Object.keys(classData).length > 0) {
+    selectClass.value = {
+      Value: classData.Name,
+      ID: classData.CLASSES_ID,
+      Room: classData.Room,
+      Trainer: classData.Trainer
+    }
+  }
+  getListClasses()
+}
+const getListClasses = async () => {
+  try {
+    let classes = await $api.class.listClasses(schoolId)
+    if (classes && classes.data && classes.data.length > 0) {
+      classesOptions.value = classes.data.map((item) => {
+        return {
+          Value: item.Name,
+          ID: item.CLASSES_ID,
+          Room: item.Room,
+          Trainer: item.Trainer
+        }
+      })
+    }
+  } catch (error) {
+    console.log('Error list class', error)
+  }
+}
+const setDefaultValue = () => {
+  courseForm.value = {}
+  message.value = {}
+  courseID.value = ''
+  footerLabel.value = ''
+}
+defineExpose({ openDialogCourseForm, onlyUpdateCourse })
+</script>
+
 <template>
   <div class="hello">
     <!-- Dialog course form  -->
@@ -6,202 +156,45 @@
       :modal_header="'Course Form'"
       @onClickDialogSubmit="createCourseInfo"
       @onClickCloseDialog="closeDialogCourseForm"
-      :footer_label="footer_label"
+      :footerLabel="footerLabel"
     >
       <template #bodyDialog>
         <div class="row">
-          <custom-input-text
+          <CustomInputText
             :placeholder="'.......'"
             :label="'Course name'"
             v-model="courseForm.Name"
             :required="true"
-            :message_error="message.Name"
-            class="py-0"
+            :messageError="message.Name"
+            class=""
           />
-          <custom-input-number
+          <CustomInputNumber
             :placeholder="'.......'"
             :label="'Credit(s)'"
             v-model="courseForm.Credit"
             :required="true"
             :isDecimal="true"
-            :message_error="message.Credit"
-            class="col-12 py-0"
+            :messageError="message.Credit"
+            class=""
           />
           <custom-dropdown
             v-show="false"
             :options="classesOptions"
             :placeholder="'Select class'"
             :label="'Classes'"
-            class="col-6 py-0"
+            class=""
             v-model="selectClass"
             :modelValue="selectClass"
             :required="true"
-            :message_error="message.Class"
+            :messageError="message.Class"
             @addNewDropdown="onClickCreateClass"
           />
         </div>
       </template>
     </custom-dialog>
-        <!-- Child classes  -->
-        <ClassForm ref="refToChildClassForm" @updatedClass="updatedClass" />
+    <!-- Child classes  -->
+    <ClassForm ref="refToChildClassForm" @updatedClass="updatedClass" />
   </div>
 </template>
-
-<script>
-import ClassForm from "../classes/ClassForm.vue";
-export default {
-  components: {
-    ClassForm
-  },
-  data() {
-    return {
-      schoolId: this.$route.params.schoolId,
-      // Form course
-      courseID: "",
-      courseForm: {
-        Name: "",
-        Credit: null,
-      },
-      // Class option
-      selectClass: "",
-      classesOptions: [],
-
-      // Error message
-      message: {
-        Name: "",
-        Credit: "",
-      },
-      // Dialog
-      footer_label: "",
-    };
-  },
-  props: {
-    msg: String,
-  },
-  emits: ["updatedCourse"],
-  watch: {},
-  updated() {},
-  created() {},
-  methods: {
-    openDialogCourseForm() {
-      this.$refs.dialogCourseForm.openDialog();
-      this.listClasses();
-    },
-    closeDialogCourseForm() {
-      this.footer_label = "";
-      this.$refs.dialogCourseForm.closeDialog();
-      this.setDefaultValue();
-    },
-    onlyUpdateCourse(data = {}) {
-      if (data && Object.keys(data).length > 0) {
-        this.courseForm.Name = data.Name;
-        this.courseForm.Credit = data.Credit;
-        this.courseForm.Floor = data.Floor;
-        // Class option
-        if (data.Class && Object.keys(data.Class).length > 0) {
-          this.selectClass = {
-            Value: data.Class.Name,
-            ID: data.Class.Id,
-            Room: data.Class.Room,
-            Trainer: data.Class.Trainer,
-          };
-        }
-        // Get courseID
-        this.courseID = data.COURSES_ID;
-        if (this.courseID) {
-          this.footer_label = "Edit";
-        }
-      }
-    },
-    async createCourseInfo() {
-      try {
-        if (
-          this.courseForm.Name &&
-          this.courseForm.Credit
-        ) {
-          let course = {};
-          this.courseForm = {
-            ...this.courseForm,
-            Class: { Name: this.selectClass.Value, Id: this.selectClass.ID },
-          };
-          if (this.courseID) {
-            course = await this.$api.course.updateCourse(
-              this.schoolId,
-              this.courseForm,
-              this.courseID
-            );
-          } else {
-            course = await this.$api.course.createCourse(this.schoolId, this.courseForm);
-          }
-          this.$emit("updatedCourse", course.data);
-          this.closeDialogCourseForm();
-        } else {
-          if (!this.courseForm.Name) {
-            this.message.Name = "Course's name is required";
-          } else {
-            this.message.Name = "";
-          }
-          if (!this.courseForm.Credit) {
-            this.message.Credit = "Credit is required";
-          } else {
-            this.message.Credit = "";
-          }
-          if (!this.selectClass) {
-            this.message.Class = "Class is required";
-          } else {
-            this.message.Class = "";
-          }
-        }
-      } catch (error) {
-        console.log("Error create course info", error);
-      }
-    },
-
-    /**
-     *
-     * Classes
-     */
-    onClickCreateClass(value) {
-      this.$refs.refToChildClassForm.openDialogClassForm();
-      this.$refs.refToChildClassForm.onlyUpdateClasses({ Name: value });
-    },
-    updatedClass(classData) {
-      if (classData && Object.keys(classData).length > 0) {
-        this.selectClass = {
-          Value: classData.Name,
-          ID: classData.CLASSES_ID,
-          Room: classData.Room,
-          Trainer: classData.Trainer,
-        };
-      }
-      this.listClasses();
-    },
-    async listClasses() {
-      try {
-        let classes = await this.$api.classApi.listClasses(this.schoolId);
-        if (classes && classes.data && classes.data.length > 0) {
-          this.classesOptions = classes.data.map((item) => {
-            return {
-              Value: item.Name,
-              ID: item.CLASSES_ID,
-              Room: item.Room,
-              Trainer: item.Trainer,
-            };
-          });
-        }
-      } catch (error) {
-        console.log("Error list class", error);
-      }
-    },
-    setDefaultValue() {
-      this.courseForm = {};
-      this.message = {};
-      this.courseID = "";
-      this.footer_label = "";
-    },
-  },
-};
-</script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>

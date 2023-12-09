@@ -1,50 +1,3 @@
-<template>
-  <div class="hello">
-    <!-- Dialog class form  -->
-    <CustomDialog
-      ref="refToChildCustomDialog"
-      :modalHeader="'Class Form'"
-      @onClickDialogSubmit="createClassInfo"
-      @onClickCloseDialog="closeDialogClassForm"
-      :footerLabel="footerLabel"
-    >
-      <template #bodyDialog>
-        <CustomInputText
-          :placeholder="'.......'"
-          :label="'Class name'"
-          :required="true"
-          v-model="classForm.Name"
-          :messageError="message.Name"
-          class="col-12 py-0"
-        />
-        <CustomDropdown
-          :options="roomOptions"
-          :placeholder="'Select room'"
-          :label="'Room'"
-          class="col-12 py-0"
-          v-model="selectRoom"
-          :modelValue="selectRoom"
-          :required="true"
-          @addNewDropdown="onClickCreateRoom"
-          :messageError="message.Room"
-        />
-        <CustomDropdown
-          :options="trainerOptions"
-          :placeholder="'Select trainer'"
-          :label="'Trainer'"
-          v-model="selectTrainer"
-          :modelValue="selectTrainer"
-          class="col-12 py-0"
-          @addNewDropdown="onClickCreateTrainer"
-        />
-      </template>
-    </CustomDialog>
-    <!-- Child trainer form  -->
-    <TrainerForm ref="refToChildTrainerForm" @updatedTrainer="updatedTrainer" />
-    <!-- Child room form  -->
-    <RoomForm ref="refToChildRoomForm" @updatedRoom="updatedRoom" />
-  </div>
-</template>
 <script setup>
 import TrainerForm from '../trainers/TrainerForm.vue'
 import RoomForm from '../rooms/RoomForm.vue'
@@ -64,7 +17,6 @@ const route = useRouter()
 const $api = inject('$api')
 const schoolId = route.currentRoute.value.params.schoolId
 const $globalFunction = inject('$globalFunction')
-const breadCrumb = ref([])
 // Functions
 // Form class
 const classID = ref('')
@@ -78,7 +30,7 @@ const roomOptions = ref([])
 // Trainer
 const trainerOptions = ref([])
 const selectTrainer = ref('')
-const refToChildRoomForm = ref();
+const refToChildRoomForm = ref()
 const refToChildCustomDialog = ref()
 const refToChildTrainerForm = ref()
 // Error message
@@ -220,9 +172,57 @@ const setDefaultValue = () => {
   selectTrainer.value = ''
 }
 defineExpose({
-  openDialogClassForm, onlyUpdateClasses
+  openDialogClassForm,
+  onlyUpdateClasses
 })
 </script>
 
+<template>
+  <div class="hello">
+    <!-- Dialog class form  -->
+    <CustomDialog
+      ref="refToChildCustomDialog"
+      :modalHeader="'Class Form'"
+      @onClickDialogSubmit="createClassInfo"
+      @onClickCloseDialog="closeDialogClassForm"
+      :footerLabel="footerLabel"
+    >
+      <template #bodyDialog>
+        <CustomInputText
+          :placeholder="'.......'"
+          :label="'Class name'"
+          :required="true"
+          v-model="classForm.Name"
+          :messageError="message.Name"
+          class="col-12 py-0"
+        />
+        <CustomDropdown
+          :options="roomOptions"
+          :placeholder="'Select room'"
+          :label="'Room'"
+          class="col-12 py-0"
+          v-model="selectRoom"
+          :modelValue="selectRoom"
+          :required="true"
+          @addNewDropdown="onClickCreateRoom"
+          :messageError="message.Room"
+        />
+        <CustomDropdown
+          :options="trainerOptions"
+          :placeholder="'Select trainer'"
+          :label="'Trainer'"
+          v-model="selectTrainer"
+          :modelValue="selectTrainer"
+          class="col-12 py-0"
+          @addNewDropdown="onClickCreateTrainer"
+        />
+      </template>
+    </CustomDialog>
+    <!-- Child trainer form  -->
+    <TrainerForm ref="refToChildTrainerForm" @updatedTrainer="updatedTrainer" />
+    <!-- Child room form  -->
+    <RoomForm ref="refToChildRoomForm" @updatedRoom="updatedRoom" />
+  </div>
+</template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>

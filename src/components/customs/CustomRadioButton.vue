@@ -77,7 +77,6 @@ export default {
   created() {
     if (this.modelValue) {
       this.values = this.modelValue;
-      console.log('v', this.values);
     }
   },
   methods: {

@@ -1,43 +1,8 @@
-<template>
-  <div>
-    <!-- Navigation with breadCrumb  -->
-    <NavigationView :breadCrumb="breadCrumb" />
-    <div v-show="true">
-      <!-- Table  -->
-      <CustomTable
-        ref="refToChildCustomTable"
-        :tableData="tableDataClasses"
-        :columns="columnsClass"
-        @update:selection="selectedRowData"
-        @onClickCreate="onClickCreateClass"
-        @onClickEdit="onClickEditClass"
-        @onClickDelete="openDialogDeleteClass"
-        @onClickDetails="onClickDetailsClass"
-      />
-    </div>
-    <!-- Child class form  -->
-    <ClassForm ref="refToChildClassForm" @updatedClass="updatedClass" />
-    <!-- Dialog delete class  -->
-    <CustomDialog
-      ref="refToChildCustomDialogDeleteClass"
-      @onClickDialogSubmit="deleteClass(selectedClasses)"
-      :danger="true"
-      @onClickCloseDialog="closeDialogDeleteClass()"
-      :isDelete="true"
-      :footerLabel="'Delete'"
-      :modalHeader="'Delete Class'"
-    >
-      <template #bodyDialog>
-        <div class="text-center mt-4">You was selected {{ selectedClasses.length }} to delete.</div>
-      </template>
-    </CustomDialog>
-  </div>
-</template>
 <script setup>
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
 import ClassForm from './ClassForm.vue'
 import { useRouter } from 'vue-router'
-onMounted( async() => {
+onMounted(async () => {
   await getListClasses()
 })
 defineEmits([''])
@@ -116,7 +81,7 @@ const getListClasses = async () => {
     console.log('Error list class', error)
   }
 }
-const updatedClass = async(event) => {
+const updatedClass = async (event) => {
   if (event && event.CloseDialog) {
     unSelectRowClass()
   }
@@ -139,5 +104,40 @@ const closeDialogDeleteClass = () => {
 defineExpose({})
 </script>
 
+<template>
+  <div>
+    <!-- Navigation with breadCrumb  -->
+    <NavigationView :breadCrumb="breadCrumb" />
+    <div v-show="true">
+      <!-- Table  -->
+      <CustomTable
+        ref="refToChildCustomTable"
+        :tableData="tableDataClasses"
+        :columns="columnsClass"
+        @update:selection="selectedRowData"
+        @onClickCreate="onClickCreateClass"
+        @onClickEdit="onClickEditClass"
+        @onClickDelete="openDialogDeleteClass"
+        @onClickDetails="onClickDetailsClass"
+      />
+    </div>
+    <!-- Child class form  -->
+    <ClassForm ref="refToChildClassForm" @updatedClass="updatedClass" />
+    <!-- Dialog delete class  -->
+    <CustomDialog
+      ref="refToChildCustomDialogDeleteClass"
+      @onClickDialogSubmit="deleteClass(selectedClasses)"
+      :danger="true"
+      @onClickCloseDialog="closeDialogDeleteClass()"
+      :isDelete="true"
+      :footerLabel="'Delete'"
+      :modalHeader="'Delete Class'"
+    >
+      <template #bodyDialog>
+        <div class="text-center mt-4">You was selected {{ selectedClasses.length }} to delete.</div>
+      </template>
+    </CustomDialog>
+  </div>
+</template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>
