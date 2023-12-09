@@ -20,8 +20,8 @@ onMounted(()=>{});
 
 
 <template>
-    <div class="card shadow-8 md:shadow-2 border-round-sm flex align-items-center justify-content-center">
-        <PrimeVueCard style="width: 25em" @click="($event) => $emit('componentClick', $event)" >
+    <div class="card border-round-sm flex flex-wrap align-items-center justify-content-center">
+        <PrimeVueCard class="w-22rem" @click="($event) => $emit('componentClick', $event)" >
             <template #header>
                 <img v-show="showComponent.showImage" :src="showComponent.ImageSrc" width="50" />
             </template>

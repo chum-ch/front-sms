@@ -1,44 +1,40 @@
 
 <template>
   <div class="">
-    <custom-qa-form/>
+    <CustomQAForm/>
   </div>
 </template>
 
-<script>
-export default {
-  components: {
-  },
-  data() {
-    return {
-      values: "",
-      p_invalid: "",
-    };
-  },
-  props: {
-  },
-  emits: ["update:modelValue"],
-  watch: {
-    // values: {
-    //   immediate: true,
-    //   handler(data) {
-    //     this.$emit("update:modelValue", data);
-    //   },
-    // },
-    // message_error: {
-    //   immediate: true,
-    //   handler(data) {
-    //     if (data) {
-    //       this.p_invalid = "p-invalid";
-    //     }
-    //   },
-    // },
-  },
-  created() {
-    // this.values = this.modelValue;
-  },
-  methods: {},
-};
+<script setup>
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(()=>{});
+defineEmits(['update:modelValue']);
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance();
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction');
+const schoolId = route.currentRoute.value.params.schoolId
+const schoolBc = $globalFunction.getDataLs('schoolBc')
+const breadCrumb = ref([])
+if (!schoolBc) {
+  route.push('/')
+} else {
+  breadCrumb.value.push(
+    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
+    { route: `/schools/${schoolId}/rooms`, label: 'Rooms' }
+  )
+}
+// Functions
+  defineExpose({});
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

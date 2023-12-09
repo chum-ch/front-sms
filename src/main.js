@@ -22,6 +22,10 @@ import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Breadcrumb from 'primevue/breadcrumb'
 import Dialog from 'primevue/dialog'
+import Divider from 'primevue/divider';
+import Tag from "primevue/tag";
+import Checkbox from "primevue/checkbox";
+import RadioButton from "primevue/radiobutton";
 // Custom component
 
 // Custom component
@@ -34,6 +38,12 @@ import CustomDialog from './components/customs/CustomDialog.vue'
 import CustomRadioButton from './components/customs/CustomRadioButton.vue'
 import CustomDropdown from './components/customs/CustomDropdown.vue'
 import CustomInputNumber from './components/customs/CustomInputNumber.vue'
+import CustomQA from './components/customs/CustomQA.vue';
+import CustomQAForm from './components/customs/CustomQAForm.vue';
+import CustomCheckBox from './components/customs/CustomCheckBox.vue';
+import CustomInputTextAea from './components/customs/CustomInputTextAea.vue';
+import CustomCalendar from './components/customs/CustomCalendar.vue';
+import CustomInputMask from './components/customs/CustomInputMask.vue';
 const app = createApp(App)
 
 // Config Axios
@@ -44,11 +54,15 @@ if (import.meta.env.PROD) {
   axios.defaults.baseURL = 'http://localhost:3003'
 }
 // Register component
-// Primevue
+// PrimeVue
 app.component('PrimeVueButton', Button)
 app.component('PrimeVueCard', Card)
 app.component('PrimeVueBreadcrumb', Breadcrumb)
 app.component('PrimeVueDialog', Dialog)
+app.component('PrimeVueDivider', Divider);
+app.component('PrimeVueTag', Tag);
+app.component('PrimeVueCheckbox', Checkbox);
+app.component('PrimeVueRadio', RadioButton);
 
 // Custom
 app.component('NavigationView', NavigationView)
@@ -60,7 +74,12 @@ app.component('CustomDialog', CustomDialog)
 app.component('CustomRadioButton', CustomRadioButton)
 app.component('CustomDropdown', CustomDropdown)
 app.component('CustomInputNumber', CustomInputNumber)
-
+app.component('CustomQA', CustomQA);
+app.component('CustomQAForm', CustomQAForm);
+app.component('CustomCheckBox', CustomCheckBox);
+app.component('CustomTextArea', CustomInputTextAea);
+app.component('CustomCalendar', CustomCalendar);
+app.component('CustomInputMask', CustomInputMask);
 app.use(router)
 app.use(PrimeVue)
 app.provide('$api', $api)

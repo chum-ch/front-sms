@@ -1,62 +1,44 @@
 <template>
   <div>
-    <!-- Navigation with breadCrum  -->
-    <custom-navigation :breadCrumb="breadCrumb" />
+    <NavigationView :breadCrumb="breadCrumb" />
     <div>
-      <custom-qa-form  v-show="false"/>
+      <CustomQAForm v-show="true" />
     </div>
-    <ExamDetails/>
+    <ExamDetails v-show="false" />
   </div>
 </template>
 
-<script>
-import ExamDetails from "./ExamDetails.vue";
-export default {
-  components: {
-    ExamDetails
-  },
-  data() {
-    return {
-      // Bread Crumb
-      breadCrumb: [],
-      schoolId: this.$route.params.schoolId,
-    };
-  },
-  props: {},
-  emits: ["update:modelValue"],
-  watch: {
-    // values: {
-    //   immediate: true,
-    //   handler(data) {
-    //     this.$emit("update:modelValue", data);
-    //   },
-    // },
-    // message_error: {
-    //   immediate: true,
-    //   handler(data) {
-    //     if (data) {
-    //       this.p_invalid = "p-invalid";
-    //     }
-    //   },
-    // },
-  },
-  created() {
-    this.getSchoolDetails(this.schoolId);
-  },
-  methods: {
-    async getSchoolDetails(schoolId) {
-      let school = await this.$api.school.getSchool(schoolId);
-      if (school && school.data && Object.keys(school.data).length > 0) {
-        this.breadCrumb = [];
-        this.breadCrumb.push(
-          { label: `${school.data.Name}`, to: "/" },
-          { label: "Manages", to: `/schools/${schoolId}/manages` },
-          { label: "Exams", to: `/schools/${schoolId}/exams` }
-        );
-      }
-    },
-  },
-};
+<script setup>
+import ExamDetails from './ExamDetails.vue'
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(() => {})
+defineEmits(['update:modelValue'])
+defineProps({
+  msg: {
+    type: String,
+    required: false
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+const schoolBc = $globalFunction.getDataLs('schoolBc')
+const breadCrumb = ref([])
+if (!schoolBc) {
+  route.push('/')
+} else {
+  breadCrumb.value.push(
+    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
+    { route: `/schools/${schoolId}/exams`, label: 'Exams' }
+  )
+}
+// Functions
+
+defineExpose({})
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

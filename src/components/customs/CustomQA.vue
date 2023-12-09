@@ -2,7 +2,7 @@
   <div class="card w-8 mx-auto my-1 border-top-3 border-blue-500 text-justify py-3 px-7">
     <div>
       <h1 class="text-center text-blue-600">Final OOP</h1>
-      <divider-primevue />
+      <PrimeVueDivider />
         <h4>{{ examSections.Title }}</h4>
       <div
         class="qa my-3 card mx-auto p-4"
@@ -15,11 +15,11 @@
             {{ itemQa.Text }}
           </span>
           <span class="float-end">
-            <tag-primevue :value="`${itemQa.Points} Points`" severity="success" v-if="itemQa.Points"/>
+            <PrimeVueTag :value="`${itemQa.Points} Points`" severity="success" v-if="itemQa.Points"/>
           </span>
         </div>
         <div class="answer-type" v-if="itemQa.Type === 'Option'">
-          <custom-radio-button
+          <CustomRadioButton
             v-model="option"
             :hideLabel="true"
             class="col-12 py-0"
@@ -34,7 +34,7 @@
           />
         </div>
         <div class="answer-type" v-else-if="itemQa.Type === 'Checkbox'">
-          <custom-check-box
+          <CustomCheckBox
             v-model="checkbox"
             class="col-12 py-0"
             @update:modelValue="addUserAnswer(examSections, 'Checkbox', $event)"
@@ -48,7 +48,7 @@
           />
         </div>
         <div class="answer-type" v-else-if="itemQa.Type === 'Answer'">
-          <custom-text-area
+          <CustomTextArea
             :placeholder="`${itemQa.Type.charAt(0).toUpperCase()}${itemQa.Type.slice(1)}`"
             @update:modelValue="addUserAnswer(examSections, 'Answer', $event)"
             v-model="answer"
@@ -57,7 +57,7 @@
       </div>
     </div>
     <div class="submit">
-      <custom-button
+      <CustomButton
         @onClick="submitAnswer(examSections)"
         class="float-end"
         :label="'Submit'"

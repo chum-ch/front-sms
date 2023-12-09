@@ -11,6 +11,7 @@
       viewBox="0 0 200 82.7"
       style="enable-background: new 0 0 200 82.7"
       xml:space="preserve"
+      class=""
     >
       <g id="Calque_1">
         <text id="XMLID_3_" transform="matrix(1.2187 0 0 1 13 75.6393)" class="st0 st1">4</text>
@@ -171,6 +172,18 @@ path#XMLID_2_ {
   100% {
     r: 20;
     opacity: 0;
+  }
+}
+@media (max-width: 500px) {
+  /* Styles applied for viewport width up to 767px */
+  svg {
+    margin-top: 30px;
+    width: 300px;
+    height: 200px;
+  }
+  .message:after,
+  .message:before {
+    margin: 0 40px;
   }
 }
 </style>

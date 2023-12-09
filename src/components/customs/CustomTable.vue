@@ -149,7 +149,6 @@ defineExpose({
         :showIcon="true"
         :leftIcon="true"
         :searchIcon="true"
-        class=""
       />
     </div>
     <DataTable

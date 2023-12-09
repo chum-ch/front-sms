@@ -11,7 +11,7 @@
         :key="index"
         class="flex align-items-center"
       >
-        <checkbox-primevue
+        <PrimeVueCheckbox
           v-model="values"
           :inputId="item.Value"
           name="checkBox"

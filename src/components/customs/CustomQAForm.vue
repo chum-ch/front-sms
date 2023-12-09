@@ -1,21 +1,21 @@
 <template>
   <div class="grid mx-auto">
     <div class="add-qa col-2 mt-8">
-      <custom-button
+      <CustomButton
         @click="addQuestSection(defaultDataTypeAnswer)"
         :label="'Add QA Answer'"
       />
-      <custom-button
+      <CustomButton
         @click="addQuestSection(defaultDataTypeCheckbox)"
         :label="'Add QA Checkbox'"
         class="my-4"
       />
-      <custom-button
+      <CustomButton
         @click="addQuestSection(defaultDataTypeOption)"
         :label="'Add QA Option'"
       />
-      <divider-primevue />
-      <custom-button
+      <PrimeVueDivider />
+      <CustomButton
         @click="submit"
         :label="'Save exam'"
         :warning="true"
@@ -33,12 +33,12 @@
       <div class="qa">
         <div class=" sticky top-0 z-2 bg-white m-0">
           <p class="m-0 fw-bolder fs-4">Question section</p>
-          <custom-input-text
+          <CustomInputText
             :placeholder="'Exam title'"
             class=""
             :hideLabel="true"
             v-model="schemaExam.ExamTitle"
-            :message_error="message.Date"
+            :messageError="message.Date"
           />
         </div>
         <div
@@ -64,7 +64,7 @@
               @mouseleave="itemOption.Hovered = false"
             >
               <div class="checkbox-qa flex w-100">
-                <checkbox-primevue
+                <PrimeVueCheckbox
                   v-model="checkBoxCorrectItem"
                   :inputId="itemOption.Text"
                   :name="itemOption.Text"
@@ -73,7 +73,7 @@
                   @input="addCorrectAnswer(indexQuestion, indexOption)"
                   v-if="itemQuestion.Type === 'Checkbox'"
                 />
-                <radio-primevue
+                <PrimeVueRadio
                   v-model="checkCorrectRadio"
                   :inputId="itemOption.Text"
                   :name="itemOption.Text"
@@ -104,7 +104,7 @@
               ></i>
             </div>
             <div class="add-checkbox flex mx-1">
-              <custom-button
+              <CustomButton
                 @click="addQuestSection(itemQuestion, indexQuestion)"
                 :label="'Add option'"
                 :text="true"
@@ -112,10 +112,10 @@
                 :style="{ padding: '7px', margin: '5px 0px' }"
               />
             </div>
-            <divider-primevue class="m-0" />
+            <PrimeVueDivider class="m-0" />
             <div class="delete-select-answer flex justify-content-between">
               <div class="flex">
-                <custom-button
+                <CustomButton
                   @click="chooseAnswer(indexQuestion)"
                   :label="itemQuestion.Disabled ? 'Correct answer' : 'Save'"
                   :success="true"
@@ -128,7 +128,7 @@
                     itemQuestion.Options.some((item) => item.Text !== '')
                   "
                 />
-                <custom-button
+                <CustomButton
                   @click="removeQuestion(indexQuestion)"
                   :label="'Delete'"
                   :danger="true"
@@ -165,7 +165,7 @@
         <div class=" sticky top-0 z-2 bg-white m-0">
           <p class="m-0 fw-bolder fs-5">Summary</p>
           <div class="row">
-            <custom-calendar
+            <CustomCalendar
               :isShowIcon="true"
               :hideLabel="true"
               class="col-12 m-0"
@@ -173,7 +173,7 @@
               :modelValue="schemaExam.ExamDate"
               :message_error="message.Date"
             />
-            <custom-input-mask
+            <CustomInputMask
               :placeholder="'Start-time hh:mm'"
               :mask="'99:99'"
               class="col-6 py-0"
@@ -181,7 +181,7 @@
               :modelValue="schemaExam.StartTime"
               :message_error="message.StartTime"
             />
-            <custom-input-mask
+            <CustomInputMask
               :placeholder="'End-time hh:mm'"
               :mask="'99:99'"
               class="col-6 py-0"
@@ -189,7 +189,7 @@
               :modelValue="schemaExam.EndTime"
               :message_error="message.EndTime"
             />
-            <custom-text-area
+            <CustomTextArea
               :placeholder="'Enter description about this exam'"
               v-model="schemaExam.Description"
               class="mt-2"
@@ -205,7 +205,7 @@
             Total points: <span class="fw-bolder">{{ totalPoint }}</span>
           </p>
         </div>
-        <divider-primevue class="mb-2" />
+        <PrimeVueDivider class="mb-2" />
         <p class="m-0 pb-3 fw-bolder">Question list</p>
       </div>
       <ol class="m-0 px-7">
