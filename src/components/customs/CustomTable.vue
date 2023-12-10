@@ -176,7 +176,7 @@ defineExpose({
       currentPageReportTemplate="Showing from {first} to {last} of {totalRecords}"
     >
       <template #empty>
-        <div v-if="tableData.length !== 0" class="text-center">
+        <div v-if="tableData.length !== 0" class="">
           The
           <span class="text-red-500 font-bold"> {{ filters['global'].value }}</span> is not found!
           🥺
