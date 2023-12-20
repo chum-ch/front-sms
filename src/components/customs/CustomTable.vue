@@ -108,7 +108,15 @@ defineExpose({
 
 <template>
   <div class="table mt-2">
-    <div class="flex justify-content-between flex-wrap mx-2">
+    <div class="flex justify-content-between sm:flex-row-reverse flex-wrap mx-2">
+      <CustomInputText
+        v-model="filters['global'].value"
+        placeholder="Search ..."
+        :showIcon="true"
+        :leftIcon="true"
+        :searchIcon="true"
+        class="search"
+      />
       <div class="flex flex-wrap">
         <CustomButton
           :label="'Add'"
@@ -143,13 +151,7 @@ defineExpose({
           v-if="!isHideDetailsBtn"
         /> -->
       </div>
-      <CustomInputText
-        v-model="filters['global'].value"
-        placeholder="Search ..."
-        :showIcon="true"
-        :leftIcon="true"
-        :searchIcon="true"
-      />
+      
     </div>
     <DataTable
       v-model:filters="filters"
@@ -174,7 +176,7 @@ defineExpose({
       currentPageReportTemplate="Showing from {first} to {last} of {totalRecords}"
     >
       <template #empty>
-        <div v-if="tableData.length !== 0" class="text-center">
+        <div v-if="tableData.length !== 0" class="">
           The
           <span class="text-red-500 font-bold"> {{ filters['global'].value }}</span> is not found!
           🥺
@@ -191,3 +193,14 @@ defineExpose({
     </DataTable>
   </div>
 </template>
+<style scoped>
+@media (max-width: 600px) {
+  /* Styles applied for viewport width up to 767px */
+  .flex {
+    display: block;
+  }
+  .search {
+    width: 100%;
+  }
+}
+</style>
