@@ -27,6 +27,7 @@ import Tag from "primevue/tag";
 import Checkbox from "primevue/checkbox";
 import RadioButton from "primevue/radiobutton";
 import Tooltip from 'primevue/tooltip';
+import Skeleton from 'primevue/skeleton';
 
 // Custom component
 
@@ -73,6 +74,7 @@ app.component('PrimeVueDivider', Divider);
 app.component('PrimeVueTag', Tag);
 app.component('PrimeVueCheckbox', Checkbox);
 app.component('PrimeVueRadio', RadioButton);
+app.component('PrimeVueSkeleton', Skeleton);
 
 // Custom
 app.component('NavigationView', NavigationView)

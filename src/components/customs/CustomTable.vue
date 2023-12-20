@@ -169,7 +169,7 @@ defineExpose({
       :value="tableData"
       scrollable
       scrollHeight="450px"
-      class="p-datatable-sm"
+      class="p-datatable-sm mt-2"
       tableStyle="min-width: 50rem"
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
