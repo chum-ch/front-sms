@@ -6,7 +6,7 @@
       :positionDialog="position"
       :style="{ width: dialogWidth ? dialogWidth : '45vw' }"
       :modal="true"
-      :breakpoints="{ '960px': '75vw', '641px': '100vw' }"
+      :breakpoints="{ '960px': '75vw', '641px': '92vw' }"
     >
       <div class="text-center" v-if="isDelete">
         <span class="mr-1 font-bold">Delete</span>

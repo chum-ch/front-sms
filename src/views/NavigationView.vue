@@ -16,7 +16,7 @@ defineEmits(['updatedBreadCrumb'])
 </script>
 
 <template>
-  <div class="sticky top-0 z-5 blur">
+  <div class="sticky top-0 z-5 blur mb-3">
     <div class="flex justify-content-between align-items-center">
       <h4>SMS</h4>
       <!-- <marquee width="60%" direction="left" height="" class=""

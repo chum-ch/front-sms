@@ -79,9 +79,9 @@ const dataTabs = [
   {
     TabName: 'Overview',
     Component: 'null',
-    Active: true,
   },
   {
+    Active: true,
     TabName: 'Schedule',
     Component: 'CustomFullCalendar',
   }

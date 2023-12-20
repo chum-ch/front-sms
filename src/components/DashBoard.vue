@@ -28,7 +28,7 @@ const listServices = (name) => {
   <NavigationView :breadCrumb="breadCrumb" />
   <div class="flex justify-content-center flex-wrap gap-3">
     <CustomCard
-      class="text-center"
+      class="text-center card-response"
       v-for="(item, index) in data"
       :key="index"
       :showComponent="{ showTitle: true, title: item.title, showImage: true, ImageSrc: item.img }"
@@ -52,4 +52,18 @@ const listServices = (name) => {
 </template>
 
 <style scoped>
+.card-response {
+  transition: transform .2s ease-in-out;
+  cursor: pointer;
+}
+.card-response:hover {
+  border: 1px solid var(--primary);
+  transform: scale(1.04);
+}
+@media (max-width: 550px) {
+  /* Styles applied for viewport width up to 767px */
+  .card-response {
+    width: 95%;
+  }
+}
 </style>
