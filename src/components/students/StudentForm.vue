@@ -185,7 +185,6 @@ defineExpose({ openDialogStudentForm, onlyUpdateStudent })
 
 <template>
   <div class="hello">
-    <h1>Student form</h1>
     <!-- Dialog student form  -->
     <CustomDialog
       ref="refToChildCustomDialog"
