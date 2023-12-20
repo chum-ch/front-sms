@@ -26,6 +26,8 @@ import Divider from 'primevue/divider';
 import Tag from "primevue/tag";
 import Checkbox from "primevue/checkbox";
 import RadioButton from "primevue/radiobutton";
+import Tooltip from 'primevue/tooltip';
+
 // Custom component
 
 // Custom component
@@ -44,10 +46,18 @@ import CustomCheckBox from './components/customs/CustomCheckBox.vue';
 import CustomInputTextAea from './components/customs/CustomInputTextAea.vue';
 import CustomCalendar from './components/customs/CustomCalendar.vue';
 import CustomInputMask from './components/customs/CustomInputMask.vue';
-const app = createApp(App)
+import CustomPeopleProfile from './components/customs/CustomPeopleProfile.vue';
+import PeopleProfile from './components/customs/PeopleProfile.vue';
+import CustomViewInfo from './components/customs/CustomViewInfo.vue';
+import CustomTab from './components/customs/CustomTab.vue';
+import CustomFullCalendar from './components/customs/CustomFullCalendar.vue';
+import CustomCropImg from './components/customs/CustomCropImg.vue';
 
+const app = createApp(App)
+app.directive('tooltip', Tooltip);
 // Config Axios
 const $api = API(axios)
+// axios.defaults.baseURL = 'https://svc-sms.onrender.com'
 if (import.meta.env.PROD) {
   axios.defaults.baseURL = 'https://svc-sms.onrender.com'
 } else {
@@ -80,6 +90,12 @@ app.component('CustomCheckBox', CustomCheckBox);
 app.component('CustomTextArea', CustomInputTextAea);
 app.component('CustomCalendar', CustomCalendar);
 app.component('CustomInputMask', CustomInputMask);
+app.component('CustomPeopleProfile', CustomPeopleProfile);
+app.component('CustomProfile', PeopleProfile);
+app.component('CustomViewInfo', CustomViewInfo);
+app.component('CustomTab', CustomTab);
+app.component('CustomFullCalendar', CustomFullCalendar);
+app.component('CustomCropImg', CustomCropImg);
 app.use(router)
 app.use(PrimeVue)
 app.provide('$api', $api)

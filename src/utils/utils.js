@@ -21,8 +21,8 @@ export default {
             return `Parameter ${arrayItem} must be array.`
         }
     },
-    getValueNtestedObject(arrayObjectPahtItem, objInfo) {
-        let items = arrayObjectPahtItem
+    getValueNestedObject(arrayObjectPathItem, objInfo) {
+        let items = arrayObjectPathItem
         if (Array.isArray(items)) {
             items.forEach(objItem => {
                 let valueMatchPath = objItem.path ? objItem.path.split('.').reduce((obj, key) => obj[key], objInfo) : undefined;
@@ -33,7 +33,7 @@ export default {
             });
             return items
         } else {
-            return `Parameter ${arrayObjectPahtItem} must be array.`
+            return `Parameter ${arrayObjectPathItem} must be array.`
         }
     }
 

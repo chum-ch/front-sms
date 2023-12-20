@@ -1,11 +1,11 @@
 <template>
   <div>
-    <custom-dialog
+    <CustomDialog
       ref="refToChildCustomDialog"
-      :modal_header="'Crop Image'"
+      :modalHeader="'Crop Image'"
       @onClickDialogSubmit="save"
       @onClickCloseDialog="closeDialogCropImg"
-      :footer_label="'Save'"
+      :footerLabel="'Save'"
       :disabledSubmitBtn="isSave"
     >
       <template #bodyDialog>
@@ -32,13 +32,13 @@
                 image-restriction="stencil"
               />
               <div class="flex justify-content-between flex-wrap mt-3">
-                <custom-button
+                <CustomButton
                   class=""
                   @click="openFileInput"
                   :label="'Upload image'"
                   :secondary="true"
                 />
-                <custom-button
+                <CustomButton
                   class=""
                   :label="'Crop'"
                   :disabled="!image.name"
@@ -46,11 +46,11 @@
                 />
               </div>
             </div>
-            <divider-primevue layout="vertical" />
+            <PrimeVueDivider layout="vertical" />
             <div class="result">
               <h3>Result</h3>
-              <custom-profile :ProfileURL="image.src"> </custom-profile>
-              <!-- <custom-button class="" :label="'Save'" @onClick="save" /> -->
+              <CustomProfile :ProfileURL="image.src"> </CustomProfile>
+              <!-- <CustomButton class="" :label="'Save'" @onClick="save" /> -->
             </div>
           </div>
           <div>
@@ -65,7 +65,7 @@
           </div>
         </div>
       </template>
-    </custom-dialog>
+    </CustomDialog>
   </div>
 </template>
 <script>

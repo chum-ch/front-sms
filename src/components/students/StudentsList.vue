@@ -1,41 +1,4 @@
-<template>
-  <div>
-    <NavigationView :breadCrumb="breadCrumb" />
-    <div v-show="true">
-      <!-- Table  -->
-      <CustomTable
-        ref="refToChildCustomTable"
-        :tableData="tableDataStudents"
-        :columns="columnsStudent"
-        @update:selection="selectedRowData"
-        @onClickCreate="onClickCreateStudent"
-        @onClickEdit="onClickEditStudent"
-        @onClickDelete="onClickDeleteStudent"
-      />
-        <!-- @onClickDetails="onClickDetailsStudent" -->
-      <!-- Child student form  -->
-      <StudentForm ref="refToChildStudentForm" @updatedStudent="updatedStudent" />
 
-      <!-- Dialog delete student  -->
-      <CustomDialog
-        ref="refToChildCustomDialogDeleteStudent"
-        @onClickDialogSubmit="deleteStudent(selectedStudent)"
-        :danger="true"
-        @onClickCloseDialog="closeDialogDeleteStudent"
-        :isDelete="true"
-        :footerLabel="'Delete'"
-        :modalHeader="'Delete Student'"
-      >
-        <template #bodyDialog>
-          <div class="text-center mt-4">
-            You was selected {{ selectedStudent.length }} to delete.
-          </div>
-        </template>
-      </CustomDialog>
-    </div>
-    <div></div>
-  </div>
-</template>
 <script setup>
 import StudentForm from './StudentForm.vue'
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
@@ -66,8 +29,9 @@ if (!schoolBc || !generationBc) {
   breadCrumb.value.push(
     { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
     { route: `/schools/${schoolId}/generations`, label: 'Generations' },
+    { route: `/schools/${schoolId}/generations`, label: `${generationBc.Name}` },
     {
-      route: `/schools/${schoolId}/generations/${generationBc.GENERATION_ID}/students`,
+      route: `/schools/${schoolId}/generations/${generationId}/students`,
       label: 'Students'
     }
   )
@@ -113,6 +77,7 @@ const onClickEditStudent = () => {
   refToChildStudentForm.value.onlyUpdateStudent(selectedStudent.value[0])
 }
 const onClickDetailsStudent = (event) => {
+  $globalFunction.setDataLs('studentBc', event[0])
   route.push(`students/${event[0].STUDENTS_ID}`)
 }
 const unSelectRowStudent = () => {
@@ -158,6 +123,46 @@ const deleteStudent = async (selectedStudent) => {
 
 defineExpose({})
 </script>
+
+<template>
+  <div>
+    <NavigationView :breadCrumb="breadCrumb" />
+    <div v-show="true">
+      <!-- Table  -->
+      <CustomTable
+        ref="refToChildCustomTable"
+        :tableData="tableDataStudents"
+        :columns="columnsStudent"
+        @update:selection="selectedRowData"
+        @onClickCreate="onClickCreateStudent"
+        @onClickEdit="onClickEditStudent"
+        @onClickDelete="onClickDeleteStudent"
+        @onClickDetails="onClickDetailsStudent"
+      />
+      <!-- Child student form  -->
+      <StudentForm ref="refToChildStudentForm" @updatedStudent="updatedStudent" />
+
+      <!-- Dialog delete student  -->
+      <CustomDialog
+        ref="refToChildCustomDialogDeleteStudent"
+        @onClickDialogSubmit="deleteStudent(selectedStudent)"
+        :danger="true"
+        @onClickCloseDialog="closeDialogDeleteStudent"
+        :isDelete="true"
+        :footerLabel="'Delete'"
+        :modalHeader="'Delete Student'"
+      >
+        <template #bodyDialog>
+          <div class="text-center mt-4">
+            You was selected {{ selectedStudent.length }} to delete.
+          </div>
+        </template>
+      </CustomDialog>
+    </div>
+    <div></div>
+  </div>
+</template>
+
 <style scoped>
 * {
   padding: 0;

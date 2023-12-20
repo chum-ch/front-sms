@@ -1,40 +1,4 @@
-<template>
-  <div>
-    <!-- Navigation with breadCrumb  -->
-    <NavigationView :breadCrumb="breadCrumb" />
-    <div v-show="true">
-      <!-- Table  -->
-      <CustomTable
-        ref="refToChildCustomTable"
-        :tableData="tableDataGenerations"
-        :columns="columnsGeneration"
-        @update:selection="selectedRowData"
-        @onClickCreate="onClickCreateGeneration"
-        @onClickEdit="onClickEditGeneration"
-        @onClickDelete="openDialogDeleteGeneration"
-        @onClickDetails="onClickDetailsGeneration"
-      />
-    </div>
-    <!-- Child generation form  -->
-    <GenerationForm ref="refToChildGenerationForm" @updatedGeneration="updatedGeneration" />
-    <!-- Dialog delete generation  -->
-    <CustomDialog
-      ref="refToChildCustomDialogDeleteGenerationForm"
-      @onClickDialogSubmit="deleteGeneration(selectedGenerations)"
-      :danger="true"
-      @onClickCloseDialog="closeDialogDeleteGeneration()"
-      :modalHeader="'Delete Generation'"
-      :isDelete="true"
-      :footerLabel="'Delete'"
-    >
-      <template #bodyDialog>
-        <div class="text-center mt-4">
-          You was selected {{ selectedGenerations.length }} to delete.
-        </div>
-      </template>
-    </CustomDialog>
-  </div>
-</template>
+
 <script setup>
 import GenerationForm from './GenerationForm.vue'
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
@@ -131,6 +95,44 @@ const closeDialogDeleteGeneration = () => {
 }
 defineExpose({})
 </script>
+
+<template>
+  <div>
+    <!-- Navigation with breadCrumb  -->
+    <NavigationView :breadCrumb="breadCrumb" />
+    <div v-show="true">
+      <!-- Table  -->
+      <CustomTable
+        ref="refToChildCustomTable"
+        :tableData="tableDataGenerations"
+        :columns="columnsGeneration"
+        @update:selection="selectedRowData"
+        @onClickCreate="onClickCreateGeneration"
+        @onClickEdit="onClickEditGeneration"
+        @onClickDelete="openDialogDeleteGeneration"
+        @onClickDetails="onClickDetailsGeneration"
+      />
+    </div>
+    <!-- Child generation form  -->
+    <GenerationForm ref="refToChildGenerationForm" @updatedGeneration="updatedGeneration" />
+    <!-- Dialog delete generation  -->
+    <CustomDialog
+      ref="refToChildCustomDialogDeleteGenerationForm"
+      @onClickDialogSubmit="deleteGeneration(selectedGenerations)"
+      :danger="true"
+      @onClickCloseDialog="closeDialogDeleteGeneration()"
+      :modalHeader="'Delete Generation'"
+      :isDelete="true"
+      :footerLabel="'Delete'"
+    >
+      <template #bodyDialog>
+        <div class="text-center mt-4">
+          You was selected {{ selectedGenerations.length }} to delete.
+        </div>
+      </template>
+    </CustomDialog>
+  </div>
+</template>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>

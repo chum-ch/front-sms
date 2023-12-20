@@ -1,69 +1,3 @@
-<template>
-  <div class="hello">
-    <!-- Dialog student form  -->
-    <CustomDialog
-      ref="refToChildCustomDialog"
-      :modal_header="'Student Form'"
-      @onClickDialogSubmit="createStudentInfo"
-      @onClickCloseDialog="closeDialogStudentForm"
-      :footerLabel="footerLabel"
-    >
-      <template #bodyDialog>
-        <div class="flex flex-wrap">
-          <CustomInputText
-            :placeholder="'......'"
-            :label="'Last name'"
-            :required="true"
-            v-model="studentForm.LastName"
-            :messageError="message.LastName"
-            class="col-6 py-0"
-          />
-          <CustomInputText
-            :placeholder="'.......'"
-            :label="'First name'"
-            :required="true"
-            v-model="studentForm.FirstName"
-            :messageError="message.FirstName"
-            class="col-6 py-0"
-          />
-          <CustomInputText
-            :placeholder="'.......'"
-            :label="'Student ID'"
-            v-model="studentForm.ID"
-            class="col-6 py-0"
-          />
-          <CustomDropdown
-            :options="classesOptions"
-            :placeholder="'Select classes'"
-            :label="'Classes'"
-            class="col-6 py-0"
-            v-model="selectClass"
-            :modelValue="selectClass"
-            :required="true"
-            :messageError="message.Class"
-            @addNewDropdown="onClickCreateClass"
-          />
-          <CustomInputText
-            :placeholder="'.......'"
-            :label="'Email'"
-            v-model="studentForm.Email"
-            class="col-12 py-0"
-          />
-          <CustomRadioButton
-            v-model="gender"
-            :label="'Gender'"
-            :defaultValue="gender"
-            :isFlex="true"
-            class="col-12 py-0"
-            :categories="radioButtonOptionStudent"
-          />
-        </div>
-      </template>
-    </CustomDialog>
-    <!-- Child classes  -->
-    <ClassForm ref="refToChildClassForm" @updatedClass="updatedClass" />
-  </div>
-</template>
 
 <script setup>
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
@@ -248,6 +182,74 @@ const setDefaultValue = () => {
 
 defineExpose({ openDialogStudentForm, onlyUpdateStudent })
 </script>
+
+<template>
+  <div class="hello">
+    <h1>Student form</h1>
+    <!-- Dialog student form  -->
+    <CustomDialog
+      ref="refToChildCustomDialog"
+      :modal_header="'Student Form'"
+      @onClickDialogSubmit="createStudentInfo"
+      @onClickCloseDialog="closeDialogStudentForm"
+      :footerLabel="footerLabel"
+    >
+      <template #bodyDialog>
+        <div class="flex flex-wrap">
+          <CustomInputText
+            :placeholder="'......'"
+            :label="'Last name'"
+            :required="true"
+            v-model="studentForm.LastName"
+            :messageError="message.LastName"
+            class="col-6 py-0"
+          />
+          <CustomInputText
+            :placeholder="'.......'"
+            :label="'First name'"
+            :required="true"
+            v-model="studentForm.FirstName"
+            :messageError="message.FirstName"
+            class="col-6 py-0"
+          />
+          <CustomInputText
+            :placeholder="'.......'"
+            :label="'Student ID'"
+            v-model="studentForm.ID"
+            class="col-6 py-0"
+          />
+          <CustomDropdown
+            :options="classesOptions"
+            :placeholder="'Select classes'"
+            :label="'Classes'"
+            class="col-6 py-0"
+            v-model="selectClass"
+            :modelValue="selectClass"
+            :required="true"
+            :messageError="message.Class"
+            @addNewDropdown="onClickCreateClass"
+          />
+          <CustomInputText
+            :placeholder="'.......'"
+            :label="'Email'"
+            v-model="studentForm.Email"
+            class="col-12 py-0"
+          />
+          <CustomRadioButton
+            v-model="gender"
+            :label="'Gender'"
+            :defaultValue="gender"
+            :isFlex="true"
+            class="col-12 py-0"
+            :categories="radioButtonOptionStudent"
+          />
+        </div>
+      </template>
+    </CustomDialog>
+    <!-- Child classes  -->
+    <ClassForm ref="refToChildClassForm" @updatedClass="updatedClass" />
+  </div>
+</template>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>

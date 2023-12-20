@@ -1,82 +1,101 @@
+<script setup>
+import {
+  onMounted,
+  reactive,
+  ref,
+  inject,
+  provide,
+  getCurrentInstance,
+  watch,
+  shallowRef
+} from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(() => {
+  const defaultActive = props.dataTabs.find((item) => item.Active);
+  selectedComponent.value = defaultActive.Component;
+})
+defineEmits(['update:modelValue'])
+const props = defineProps({
+  msg: {
+    type: String,
+    required: false
+  },
+  dataTabs: {
+    type: Array
+  },
+  isFlex: {
+    type: Boolean
+  },
+  justifyContent: {
+    type: String
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+const schoolBc = $globalFunction.getDataLs('schoolBc')
+const breadCrumb = ref([])
+const selectedComponent = shallowRef(null)
+if (!schoolBc) {
+  route.push('/')
+} else {
+  breadCrumb.value.push(
+    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
+    { route: `/schools/${schoolId}/rooms`, label: 'Rooms' }
+  )
+}
+const showNav = (name) => {
+  selectedComponent.value = name
+}
+defineExpose({})
+</script>
+
 <template>
   <div>
-    <nav
-      class=""
-      :class="[
-        isFlex ? 'flex' : '',
-        justifyContent ? `d-flex justify-content-${justifyContent}` : '',
-      ]"
-    >
-      <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <div v-for="(item, index) in dataTabs" :key="index">
-          <button
-            class="nav-link fw-bold"
-            :class="item.Active ? 'active' : ''"
-            :id="index"
-            data-bs-toggle="tab"
-            :data-bs-target="`#${item.TabName}`"
-            type="button"
-            role="tab"
-            aria-controls="nav-home"
-            aria-selected="true"
-          >
-            {{ item.TabName }}
-          </button>
-        </div>
-      </div>
-    </nav>
-    <div class="tab-content" id="nav-tabContent">
-      
-      <div
-        v-for="(item, index) in dataTabs"
-        :style="item.style"
-        :key="index"
-        class="tab-pane fade show overflow-scroll h-screen my-4"
-        :class="[item.Active ? 'active' : '']"
-        :id="item.TabName"
-        role="tabpanel"
-        :aria-labelledby="index"
+    <nav class="mb-2">
+      <ul
+        :class="[
+          isFlex ? 'flex' : '',
+          justifyContent ? `d-flex justify-content-${justifyContent}` : ''
+        ]"
       >
-        <slot :name="item.ComponentName"></slot>
-      </div>
-    </div>
+        <li
+          v-for="(item, index) in dataTabs"
+          :key="index"
+          @click="showNav(item.Component)"
+          :class="[
+            { active: selectedComponent === item.Component },
+            { active: !selectedComponent === item.Active }
+          ]"
+        >
+          {{ item.TabName }}
+        </li>
+      </ul>
+    </nav>
+    <PrimeVueDivider />
+    <component :is="selectedComponent" />
   </div>
 </template>
 
-<script>
-export default {
-  components: {},
-  data() {
-    return {
-      values: "",
-      p_invalid: "",
-    };
-  },
-  props: {
-    dataTabs: Array,
-    isFlex: Boolean,
-    justifyContent: String,
-  },
-  emits: ["update:modelValue"],
-  watch: {
-    // values: {
-    //   immediate: true,
-    //   handler(data) {
-    //     this.$emit("update:modelValue", data);
-    //   },
-    // },
-  },
-  created() {
-    // this.values = this.modelValue;
-  },
-  methods: {},
-};
-</script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#nav-tab .active {
+nav ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+ul li {
+  padding: 4px;
+  margin: 0 4px;
+  cursor: pointer;
+  /* background: red; */
+}
+li.active {
+  border-bottom: 4px solid;
   color: var(--primary-color);
-  background: var(--primary-50);
+  border-radius: 5px;
 }
 </style>

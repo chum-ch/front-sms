@@ -1,3 +1,44 @@
+<script setup>
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { useRouter } from 'vue-router'
+onMounted(() => {})
+defineEmits(['onClick'])
+defineProps({
+  fullName: {
+    type: String,
+    default: () => ''
+  },
+  email: {
+    type: String,
+    default: () => ''
+  },
+  style: {
+    type: Object,
+    default: () => {}
+  },
+  ProfileURL: {
+    type: String,
+    default: () => ''
+  }
+})
+// Variable
+const instance = getCurrentInstance()
+const route = useRouter()
+const $api = inject('$api')
+const $globalFunction = inject('$globalFunction')
+const schoolId = route.currentRoute.value.params.schoolId
+const schoolBc = $globalFunction.getDataLs('schoolBc')
+const breadCrumb = ref([])
+if (!schoolBc) {
+  route.push('/')
+}
+// Functions
+const defaultImg = ref()
+defaultImg.value =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png'
+defineExpose({})
+</script>
+
 <template>
   <!-- <div class="profile-picture">
       <img src="../../assets/img/school-1.png" />
@@ -5,52 +46,18 @@
   <div class="shadow-8 md:shadow-2 surface-overlay h-full p-2">
     <div class="text-center">
       <div class="my-3 flex justify-content-center flex-wrap" @click="$emit('onClick')">
-        <div
-          class="profile-picture"
-          :style="style"
-          v-tooltip.top="'Click to change profile'"
-        >
+        <div class="profile-picture" :style="style" v-tooltip.top="'Click to change profile'">
           <!-- :src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png" -->
           <img :src="ProfileURL ? ProfileURL : defaultImg" />
         </div>
       </div>
       <h3>{{ fullName }}</h3>
-      <p>{{ email }}</p>
+      <p class="email text-sm mb-2">{{ email }}</p>
     </div>
-    <divider-primevue />
+    <PrimeVueDivider />
     <slot name="view_info"></slot>
   </div>
 </template>
-
-<script>
-export default {
-  components: {},
-  data() {
-    return {
-      defaultImg:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png",
-    };
-  },
-  props: {
-    msg: String,
-    fullName: String,
-    email: String,
-    style: Object,
-    ProfileURL: String,
-  },
-  emits: ["onClick"],
-  watch: {
-    // values: {
-    //   immediate: true,
-    //   handler(data) {
-    //     this.$emit("update:modelValue", data);
-    //   },
-    // },
-  },
-  created() {},
-  methods: {},
-};
-</script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
@@ -77,7 +84,7 @@ export default {
 }
 
 .profile-picture:hover::after {
-  content: ""; /* addan empty content */
+  content: ''; /* addan empty content */
   position: absolute; /* make the overlay position absolute */
   top: 0; /* set the top position to 0 */
   left: 0; /* set the left position to 0 */
@@ -89,7 +96,7 @@ export default {
 }
 
 .profile-picture:hover::before {
-  content: ""; /* add text content */
+  content: ''; /* add text content */
   position: absolute; /* make the text position absolute */
   bottom: -25px; /* set the bottom position to -25px */
   left: 50%; /* set the left position to 50% */
@@ -103,5 +110,8 @@ export default {
 .profile-picture:hover::after,
 .profile-picture:hover::before {
   opacity: 1; /* set the opacity to 1 on hover */
+}
+.email {
+  word-break: break-all;
 }
 </style>

@@ -1,26 +1,3 @@
-<template>
-  <div class="hello">
-    <!-- Dialog generation form  -->
-    <CustomDialog
-      ref="dialogGenerationForm"
-      :modalHeader="'Generation Form'"
-      @onClickDialogSubmit="createGenerationInfo"
-      @onClickCloseDialog="closeDialogGenerationForm"
-      :footerLabel="footerLabel"
-    >
-      <template #bodyDialog>
-        <CustomInputText
-          :placeholder="'.......'"
-          :label="'Generation name'"
-          v-model="generationForm.Name"
-          :required="true"
-          :messageError="message.Name"
-          class="py-0"
-        />
-      </template>
-    </CustomDialog>
-  </div>
-</template>
 
 <script setup>
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
@@ -107,6 +84,30 @@ const setDefaultValue = () => {
 }
 defineExpose({ openDialogGenerationForm, onlyUpdateGeneration })
 </script>
+
+<template>
+  <div class="hello">
+    <!-- Dialog generation form  -->
+    <CustomDialog
+      ref="dialogGenerationForm"
+      :modalHeader="'Generation Form'"
+      @onClickDialogSubmit="createGenerationInfo"
+      @onClickCloseDialog="closeDialogGenerationForm"
+      :footerLabel="footerLabel"
+    >
+      <template #bodyDialog>
+        <CustomInputText
+          :placeholder="'.......'"
+          :label="'Generation name'"
+          v-model="generationForm.Name"
+          :required="true"
+          :messageError="message.Name"
+          class="py-0"
+        />
+      </template>
+    </CustomDialog>
+  </div>
+</template>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>

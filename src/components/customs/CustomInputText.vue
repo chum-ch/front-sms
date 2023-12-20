@@ -5,7 +5,7 @@
       <span v-if="required" class="text-red-500"> *</span>
     </div>
     <div v-if="showIcon">
-      <span :class="rightRcon ? 'p-input-icon-right' : 'p-input-icon-left'">
+      <span :class="rightIcon ? 'p-input-icon-right' : 'p-input-icon-left'">
         <i
           :class="
             userIcon
@@ -81,7 +81,7 @@ export default {
     spinnerIcon: Boolean,
     emailIcon: Boolean,
     showIcon: Boolean,
-    rightRcon: Boolean,
+    rightIcon: Boolean,
     isDisabled: Boolean,
     border: String,
     style: Object,
@@ -115,6 +115,9 @@ export default {
     updateModelValue(value) {
       this.values = value;
       this.$emit("update:modelValue", this.values);
+      if (this.values) {
+        this.pInvalid = '';
+      }
       // console.log("value text input", value);
     },
   },
