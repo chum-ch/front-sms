@@ -37,7 +37,7 @@ const manage = (id, school) => {
 <template>
   <div class="flex justify-content-center flex-wrap gap-3">
     <CustomCard
-      class="text-center"
+      class="text-center  card-response"
       v-for="(item, index) in schoolItems"
       :key="index"
       :showComponent="{
@@ -51,4 +51,11 @@ const manage = (id, school) => {
   </div>
 </template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+@media (max-width: 550px) {
+  /* Styles applied for viewport width up to 767px */
+  .card-response {
+    width: 95%;
+  }
+}
+</style>
