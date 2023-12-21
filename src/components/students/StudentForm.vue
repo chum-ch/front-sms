@@ -1,4 +1,3 @@
-
 <script setup>
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
 import ClassForm from '../classes/ClassForm.vue'
@@ -177,7 +176,9 @@ const setDefaultValue = () => {
   studentID.value = ''
   footerLabel.value = ''
   selectClass.value = ''
-  gender.value = {}
+  gender.value = {
+    Value: 'Male'
+  }
 }
 
 defineExpose({ openDialogStudentForm, onlyUpdateStudent })

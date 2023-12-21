@@ -108,7 +108,9 @@ const setDefaultValue = () => {
   message.value = {}
   trainerID.value = ''
   footerLabel.value = ''
-  gender.value = {};
+  gender.value = {
+    Value: 'Male'
+  };
 }
 defineExpose({ openDialogTrainerForm, onlyUpdateTrainer })
 </script>

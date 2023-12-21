@@ -15,6 +15,7 @@
         optionLabel="Value"
         :class="required && messageError !== '' ? p_invalid : ''"
         @update:modelValue="updateModelValue"
+        :resetFilterOnHide="true"
       >
         <template #content> </template>
         <template #value="slotProps">
