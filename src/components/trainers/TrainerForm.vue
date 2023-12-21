@@ -28,8 +28,8 @@ const trainerForm = ref({
   Gender: ''
 })
 const gender = ref({
-    Value: 'Male'
-  })
+  Value: 'Male'
+})
 const radioButtonOptionTrainer = ref([
   {
     Value: 'Male'
@@ -59,7 +59,7 @@ const onlyUpdateTrainer = (data = {}) => {
     trainerForm.value.FirstName = data.FirstName
     trainerForm.value.LastName = data.LastName
     trainerForm.value.Email = data.Email
-    gender.value = data.Gender
+    gender.value = data.Gender || { Value: 'Male' }
     trainerForm.value.Province = data.Province
     trainerForm.value.Phone = data.Phone
     // Get trainer ID
@@ -98,9 +98,9 @@ const createTrainerInfo = async () => {
     console.log('Error create trainer info', error)
   }
 }
-const updateInput =(value)=>{
+const updateInput = (value) => {
   if (value) {
-    message.value = {};
+    message.value = {}
   }
 }
 const setDefaultValue = () => {
@@ -110,7 +110,7 @@ const setDefaultValue = () => {
   footerLabel.value = ''
   gender.value = {
     Value: 'Male'
-  };
+  }
 }
 defineExpose({ openDialogTrainerForm, onlyUpdateTrainer })
 </script>
@@ -177,13 +177,13 @@ defineExpose({ openDialogTrainerForm, onlyUpdateTrainer })
           class=""
         />
         <CustomRadioButton
-            v-model="gender"
-            :label="'Gender'"
-            :defaultValue="gender"
-            :isFlex="true"
-            class=""
-            :categories="radioButtonOptionTrainer"
-          />
+          v-model="gender"
+          :label="'Gender'"
+          :defaultValue="gender"
+          :isFlex="true"
+          class=""
+          :categories="radioButtonOptionTrainer"
+        />
       </template>
     </CustomDialog>
   </div>

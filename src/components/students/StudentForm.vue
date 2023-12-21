@@ -70,7 +70,7 @@ const onlyUpdateStudent = (data = {}) => {
     studentForm.value.FirstName = data.FirstName
     studentForm.value.LastName = data.LastName
     studentForm.value.Email = data.Email
-    gender.value = { Value: data.Gender }
+    gender.value = data.Gender || { Value: 'Male' }
     studentForm.value.ID = data.ID
     // Get studentID
     studentID.value = data.STUDENTS_ID
@@ -95,7 +95,7 @@ const createStudentInfo = async () => {
       selectClass.value['Id'] = selectClass.value['ID']
       delete selectClass.value['Value']
       delete selectClass.value['ID']
-      studentForm.value.Gender = gender.value.Value
+      studentForm.value.Gender = gender.value
       studentForm.value.Class = selectClass
       let student = {}
       if (studentID.value) {
@@ -176,9 +176,7 @@ const setDefaultValue = () => {
   studentID.value = ''
   footerLabel.value = ''
   selectClass.value = ''
-  gender.value = {
-    Value: 'Male'
-  }
+  gender.value = { Value: 'Male' }
 }
 
 defineExpose({ openDialogStudentForm, onlyUpdateStudent })

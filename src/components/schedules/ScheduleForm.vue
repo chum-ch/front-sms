@@ -356,7 +356,7 @@ const setDefaultValue = () => {
   footerLabel.value = ''
 }
 
-defineExpose({ openDialogScheduleForm, onlyUpdateSchedule})
+defineExpose({ openDialogScheduleForm, onlyUpdateSchedule })
 </script>
 
 <template>
