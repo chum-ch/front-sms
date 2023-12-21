@@ -48,7 +48,7 @@ onMounted(() => {
     </div> -->
   </header>
 
-  <div class="flex justify-content-center flex-wrap gap-3" v-if="isSkeleton && route.currentRoute.value.name !=='manages'">
+  <div class="flex justify-content-center flex-wrap gap-3" v-if="isSkeleton && route.currentRoute.value.path==='/'">
     <div class="relative" v-for="index in 2" :key="index">
       <PrimeVueSkeleton width="22rem" height="9rem" class="" />
       <div class="absolute bottom-0 top-50 ml-5 mt-3">

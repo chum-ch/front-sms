@@ -8,7 +8,7 @@ import ClassesRouter from '../components/classes/route';
 import RoomsRouter from '../components/rooms/route';
 import StudentsRouter from '../components/students/route';
 // import CleanersRouter from '../components/cleaners/route';
-// import SchedulesRouter from '../components/schedules/route';
+import SchedulesRouter from '../components/schedules/route';
 import CoursesRouter from '../components/courses/route';
 import GenerationsRouter from '../components/generations/route';
 // import ExamsRouter from '../components/exams/route';
@@ -21,7 +21,7 @@ const router = createRouter({
   ...TrainersRouter,
   ...StudentsRouter,
   // ...CleanersRouter,
-  // ...SchedulesRouter,
+  ...SchedulesRouter,
   ...CoursesRouter,
   ...GenerationsRouter,
   // ...ExamsRouter,
