@@ -27,7 +27,8 @@
     "vue": "^3.3.4",
     "vue-advanced-cropper": "^2.8.8",
     "vue-router": "^4.2.5",
-    "vuetify": "^3.4.4"
+    "vuetify": "^3.4.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@nightwatch/vue": "0.4.5",

@@ -28,7 +28,10 @@ import Checkbox from "primevue/checkbox";
 import RadioButton from "primevue/radiobutton";
 import Tooltip from 'primevue/tooltip';
 import Skeleton from 'primevue/skeleton';
-
+import ProgressBar from 'primevue/progressbar';
+import FileUpload from 'primevue/fileupload';
+import Menubar from 'primevue/menubar';
+import TieredMenu from 'primevue/tieredmenu';
 // Custom component
 
 // Custom component
@@ -53,6 +56,10 @@ import CustomViewInfo from './components/customs/CustomViewInfo.vue';
 import CustomTab from './components/customs/CustomTab.vue';
 import CustomFullCalendar from './components/customs/CustomFullCalendar.vue';
 import CustomCropImg from './components/customs/CustomCropImg.vue';
+import CustomColumnDownload from './components/customs/CustomColumnDownload.vue';
+import CustomProgressBar from './components/customs/CustomProgressBar.vue';
+import CustomUploadFile from './components/customs/CustomUploadFile.vue';
+import CustomTieredMenu from './components/customs/CustomTieredMenu.vue';
 
 const app = createApp(App)
 app.directive('tooltip', Tooltip);
@@ -75,6 +82,11 @@ app.component('PrimeVueTag', Tag);
 app.component('PrimeVueCheckbox', Checkbox);
 app.component('PrimeVueRadio', RadioButton);
 app.component('PrimeVueSkeleton', Skeleton);
+app.component('PrimeVueProgressBar', ProgressBar);
+app.component('PrimeVueFileUpload', FileUpload);
+app.component('PrimeVueMenubar', Menubar);
+app.component('PrimeVueTieredMenu', TieredMenu);
+
 
 // Custom
 app.component('NavigationView', NavigationView)
@@ -98,6 +110,10 @@ app.component('CustomViewInfo', CustomViewInfo);
 app.component('CustomTab', CustomTab);
 app.component('CustomFullCalendar', CustomFullCalendar);
 app.component('CustomCropImg', CustomCropImg);
+app.component('CustomColumnDownload', CustomColumnDownload);
+app.component('CustomProgressBar', CustomProgressBar);
+app.component('CustomUploadFile', CustomUploadFile);
+app.component('CustomTieredMenu', CustomTieredMenu);
 app.use(router)
 app.use(PrimeVue)
 app.provide('$api', $api)

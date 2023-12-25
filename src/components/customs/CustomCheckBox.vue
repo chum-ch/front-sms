@@ -1,16 +1,18 @@
 <template>
   <div class="p-fluid">
-    <label v-if="label !== ''" class="mb-2" :class="hideLabel  ? 'd-none' : ''">{{ label }} </label>
-    <div
-      :class="
-        isFlex ? 'flex flex-wrap column-gap-3' : 'flex flex-column flex-wrap row-gap-2'
-      "
-    >
-      <div
-        v-for="(item, index) in checkBoxCategories"
-        :key="index"
-        class="flex align-items-center"
-      >
+    <label v-if="label !== ''" class="mb-2" :class="hideLabel ? 'd-none' : ''">{{ label }} </label>
+    <div class="my-3">
+      <PrimeVueCheckbox
+        :binary="true"
+        v-model="checked"
+        inputId="checkAll"
+        @input="checkAll(checkBoxCategories)"
+      />
+      <label for="checkAll" class="ml-2">Check All</label>
+    </div>
+    <div :class="isFlex ? 'flex flex-wrap column-gap-3' : 'flex flex-column flex-wrap row-gap-2'">
+      <div class="flex align-items-center"></div>
+      <div v-for="(item, index) in checkBoxCategories" :key="index" class="flex align-items-center">
         <PrimeVueCheckbox
           v-model="values"
           :inputId="item.Value"
@@ -19,12 +21,9 @@
           :disabled="item.Disable"
           @input="inputValue"
         />
-        <label
-          :for="item.Value"
-          class="ml-2"
-          :style="item.Disable ? objectStyleCSS : ''"
-          >{{ item.Value }}</label
-        >
+        <label :for="item.Value" class="ml-2" :style="item.Disable ? objectStyleCSS : ''">{{
+          item.Value
+        }}</label>
       </div>
     </div>
   </div>
@@ -32,17 +31,18 @@
 
 <script>
 export default {
-  components: {
-  },
+  components: {},
   data() {
     return {
-      values: this.defaultValue ? this.defaultValue : "",
-      p_invalid: "",
+      values: this.defaultValue ? this.defaultValue : [],
+      selectedAllItems: [],
+      checked: false,
+      p_invalid: '',
       objectStyleCSS: {
-        color: "gray",
-        cursor: "not-allowed",
-      },
-    };
+        color: 'gray',
+        cursor: 'not-allowed'
+      }
+    }
   },
   props: {
     checkBoxCategories: Array,
@@ -50,9 +50,9 @@ export default {
     label: String,
     isFlex: Boolean,
     hideLabel: Boolean,
-    modelValue: [String, Number, Object],
+    modelValue: [String, Number, Object]
   },
-  emits: ["update:modelValue"],
+  emits: ['update:modelValue'],
   watch: {
     // values: {
     //   immediate: true,
@@ -65,18 +65,26 @@ export default {
       immediate: true,
       handler(data) {
         if (data) {
-          this.p_invalid = "p-invalid";
+          this.p_invalid = 'p-invalid'
         }
-      },
-    },
+      }
+    }
   },
   created() {},
   methods: {
-    inputValue(data){
-      this.$emit("update:modelValue", data)
+    checkAll(data) {
+      if (this.checked) {
+        this.values = data
+      } else {
+        this.values = []
+      }
+      this.inputValue(this.values)
+    },
+    inputValue(data) {
+      this.$emit('update:modelValue', data)
     }
-  },
-};
+  }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

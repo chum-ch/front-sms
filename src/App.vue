@@ -10,19 +10,23 @@ const isSkeleton = ref(true)
 onMounted(() => {
   try {
     axios.interceptors.request.use((config) => {
-      isLoading.value = true
+      const hasKeyShowLoading = Object.keys(config).includes('showLoading')
+      if (hasKeyShowLoading) {
+        isLoading.value = config.showLoading
+      } else {
+        isLoading.value = true
+      }
       return config
     })
     axios.interceptors.response.use(
       (response) => {
         isLoading.value = false
-        isSkeleton.value = false;
+        isSkeleton.value = false
         return response
       },
       (error) => {
         console.log('error')
         isLoading.value = false
-
         return Promise.reject(error)
       }
     )
@@ -48,11 +52,18 @@ onMounted(() => {
     </div> -->
   </header>
 
-  <div class="flex justify-content-center flex-wrap gap-3" v-if="isSkeleton && route.currentRoute.value.path==='/'">
+  <div
+    class="flex justify-content-center flex-wrap gap-3"
+    v-if="isSkeleton && route.currentRoute.value.path === '/'"
+  >
     <div class="relative" v-for="index in 2" :key="index">
       <PrimeVueSkeleton width="22rem" height="9rem" class="" />
       <div class="absolute bottom-0 top-50 ml-5 mt-3">
-        <PrimeVueSkeleton width="18rem" height="2.7rem" class="bg-teal-50 border-2 border-teal-50" />
+        <PrimeVueSkeleton
+          width="18rem"
+          height="2.7rem"
+          class="bg-teal-50 border-2 border-teal-50"
+        />
       </div>
     </div>
   </div>

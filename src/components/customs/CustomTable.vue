@@ -30,12 +30,22 @@ const props = defineProps({
     type: Boolean,
     required: false
   },
+  menuItems: {
+    type: Array,
+    required: true
+  },
   hasImage: {
     type: Boolean,
     default: () => true
   }
 })
-defineEmits(['onClickCreate', 'onClickEdit', 'onClickDelete', 'update:selection', 'onClickDetails'])
+defineEmits([
+  'onClickCreate',
+  'onClickEdit',
+  'onClickDelete',
+  'update:selection',
+  'onClickDetails',
+])
 onMounted(() => {
   // initFilters()
 })
@@ -120,7 +130,7 @@ defineExpose({
       <div class="flex flex-wrap">
         <CustomButton
           :label="'Add'"
-          class="mr-2"
+          class="mr-2 mb-2"
           @onClick="($event) => $emit('onClickCreate', $event)"
           v-if="!isHideAddBtn"
         />
@@ -134,24 +144,17 @@ defineExpose({
         />
         <CustomButton
           :label="'Delete'"
-          class=""
+          class="mr-2"
           @onClick="() => $emit('onClickDelete', selection)"
           :danger="true"
           :outlined="true"
           :disabled="disabledDelete"
           v-if="!isHideDeleteBtn"
         />
-        <!-- <CustomButton
-          :label="'More'"
-          class="mt-3 me-3"
-          @onClick="($event) => $emit('onClickDetails', selection)"
-          :warning="true"
-          :outlined="true"
-          :disabled="disabledEdit"
-          v-if="!isHideDetailsBtn"
-        /> -->
+        <CustomTieredMenu
+        :menuItems="menuItems"
+        />
       </div>
-      
     </div>
     <DataTable
       v-model:filters="filters"
@@ -169,7 +172,7 @@ defineExpose({
       :value="tableData"
       scrollable
       scrollHeight="450px"
-      class="p-datatable-sm mt-2"
+      class="p-datatable-sm mt-2 z-0"
       tableStyle="min-width: 50rem"
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"

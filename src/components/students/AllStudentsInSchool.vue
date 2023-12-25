@@ -15,9 +15,12 @@ const route = useRouter()
 const $api = inject('$api')
 const $globalFunction = inject('$globalFunction')
 const schoolId = route.currentRoute.value.params.schoolId
+// Breadcrumb
+const schoolBc = $globalFunction.getDataLs('schoolBc')
 const refToChildCustomDialogDeleteStudent = ref();
 const refToChildCustomTable = ref()
 const breadCrumb = ref([
+  { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
   { label: 'Manages', route: `/schools/${schoolId}/manages` },
   {
     label: 'Students',
