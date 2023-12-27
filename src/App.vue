@@ -4,9 +4,10 @@ import { RouterLink, RouterView, useRouter } from 'vue-router'
 import axios from 'axios'
 import CustomSpinner from './components/customs/CustomSpinner.vue'
 const route = useRouter()
-const receivedData = ref(null)
 const isLoading = ref(false)
 const isSkeleton = ref(true)
+const dialogMessage = ref()
+const msg = ref('Something error.')
 onMounted(() => {
   try {
     axios.interceptors.request.use((config) => {
@@ -25,16 +26,31 @@ onMounted(() => {
         return response
       },
       (error) => {
-        console.log('error')
+        if (error.response.status >= 400 && error.response.status <= 500) {
+          const { message } = error.response.data;
+          if (typeof message ==='string') {
+            msg.value = message;
+          }
+          openDialogMessage()
+          setTimeout(() => {
+            closeDialogMessage()
+          }, 10000) // Delay of 8000 milliseconds (5 seconds) before clearing progress
+        }
         isLoading.value = false
         return Promise.reject(error)
       }
     )
   } catch (error) {
-    console.log('error', error)
+    console.error('Error', error)
     isLoading.value = false
   }
 })
+const openDialogMessage = () => {
+  dialogMessage.value.openDialog()
+}
+const closeDialogMessage = () => {
+  dialogMessage.value.closeDialog()
+}
 </script>
 
 <template>
@@ -51,7 +67,20 @@ onMounted(() => {
       </nav>
     </div> -->
   </header>
-
+  <CustomDialog
+    ref="dialogMessage"
+    :modalHeader="'Error message'"
+    @onClickDialogSubmit="openDialogMessage"
+    @onClickCloseDialog="closeDialogMessage"
+    :secondary="true"
+    :hideBtnSubmit="true"
+  >
+    <template #bodyDialog>
+      <p class="text-center pt-3 text-red-500"> {{ msg }}
+        <i class="pi pi-exclamation-triangle text-red-500 font-bold"></i>
+      </p>
+    </template>
+  </CustomDialog>
   <div
     class="flex justify-content-center flex-wrap gap-3"
     v-if="isSkeleton && route.currentRoute.value.path === '/'"

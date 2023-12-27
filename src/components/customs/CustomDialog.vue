@@ -21,8 +21,10 @@
             :label="'Cancel'"
             class="mr-2"
             :outlined="true"
+            :secondary="secondary"
           />
           <CustomButton
+            :hide="hideBtnSubmit"
             :label="footerLabel ? footerLabel : 'Submit'"
             :disabled="disabledSubmitBtn"
             :danger="danger"
@@ -53,7 +55,9 @@ export default {
     hideFooter: Boolean,
     footerLabel: String,
     danger: Boolean,
-    isDelete: Boolean
+    isDelete: Boolean,
+    hideBtnSubmit: Boolean,
+    secondary: Boolean
   },
   emits: ['onClickDialogSubmit', 'onClickCloseDialog'],
   watch: {},

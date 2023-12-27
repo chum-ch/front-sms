@@ -29,7 +29,7 @@ if (!schoolBc) {
 }
 const getDataCheckBox = (data)=>{
   const modifiedData = data.reduce((acc, { Value }) => {
-  return [...acc, { [Value]: Value }];
+  return [...acc, { field: Value }];
 }, []);
 instance.emit('getDataCheckBox', modifiedData)
 }

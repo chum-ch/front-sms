@@ -1,7 +1,7 @@
 <template>
   <div class="p-fluid">
     <label v-if="label !== ''" class="mb-2" :class="hideLabel ? 'd-none' : ''">{{ label }} </label>
-    <div class="my-3">
+    <div class="mb-5">
       <PrimeVueCheckbox
         :binary="true"
         v-model="checked"
@@ -10,8 +10,7 @@
       />
       <label for="checkAll" class="ml-2">Check All</label>
     </div>
-    <div :class="isFlex ? 'flex flex-wrap column-gap-3' : 'flex flex-column flex-wrap row-gap-2'">
-      <div class="flex align-items-center"></div>
+    <div :class="isFlex ? 'flex flex-wrap gap-3' : 'flex flex-column flex-wrap row-gap-2'">
       <div v-for="(item, index) in checkBoxCategories" :key="index" class="flex align-items-center">
         <PrimeVueCheckbox
           v-model="values"

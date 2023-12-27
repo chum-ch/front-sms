@@ -1,25 +1,25 @@
 <script setup>
-import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
+import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-onMounted(()=>{});
-defineEmits(['uploadedFile']);
+onMounted(() => {})
+defineEmits(['uploadedFile', 'upload'])
 defineProps({
   msg: {
     type: String,
     required: false
   },
   chooseLabel: {
-    type: String, 
-    default: ()=> 'Choose'
+    type: String,
+    default: () => 'Choose'
   }
 })
 // Variable
-const instance = getCurrentInstance();
+const instance = getCurrentInstance()
 const route = useRouter()
 const $api = inject('$api')
-const $globalFunction = inject('$globalFunction');
+const $globalFunction = inject('$globalFunction')
 const schoolBc = $globalFunction.getDataLs('schoolBc')
-const fileInput = ref();
+const fileUploadRef = ref(null)
 if (!schoolBc) {
   route.push('/')
 }
@@ -30,28 +30,28 @@ const getSelectedFile = (event) => {
   } = event
   instance.emit('uploadedFile', uploadedFile)
 }
-const chooseFile =()=>{
-  console.log('chooseFile');
-  fileInput.value.click();
+const clearFileSelected = () => {
+  fileUploadRef.value.clear()
 }
-defineExpose({chooseFile});
+const openFileBrowser = () => {
+  fileUploadRef.value.choose()
+}
+defineExpose({ getSelectedFile, openFileBrowser, clearFileSelected })
 </script>
 
 <template>
   <div class="greetings">
     <PrimeVueFileUpload
-      mode="basic"
-      ref="fileInput"
-      id="fileInput"
       accept=".xlsx, .xls"
       :maxFileSize="1000000"
-      @select="getSelectedFile"
       :chooseLabel="chooseLabel"
+      @select="getSelectedFile"
       class="secondary"
-      style="padding: .6rem;"
+      style="padding: 0.6rem"
+      ref="fileUploadRef"
+      mode="basic"
     />
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
