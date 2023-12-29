@@ -78,7 +78,7 @@ const menuItems = ref([
   }
 ])
 
-const noted = [['Important noted'], ['- Required']]
+const noted = [['Important noted'], ['- All column are required']]
 // Functions
 const getListRooms = async () => {
   try {
@@ -150,9 +150,9 @@ const processFileUpload = async (selectedFile) => {
       refToChildProgressBar.value.checkProgress(URLRoomProgress)
     }
   } catch (error) {
-    const { ErrorColumnHeaders, ErrorRows } = error.response.data
-    if (ErrorColumnHeaders || ErrorRows) {
-      $globalFunction.exportToExcel({ ErrorColumnHeaders, ErrorRows })
+    const { data } = error.response
+    if (typeof data === 'object' && Object.keys(data).length > 0) {
+      $globalFunction.exportToExcel(data)
     }
   }
 }

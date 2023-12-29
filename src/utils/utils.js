@@ -119,7 +119,7 @@ export default {
     let numberToMerge = 0
     for (const [index, [key, objData]] of Object.entries(data).entries()) {
       // Extract headers
-      const headers = Array.from(new Set(objData.flatMap(Object.keys)))
+            const headers = Array.from(new Set(objData.flatMap(Object.keys)))
       const sectionData = objData.map((item) => {
         return headers.map((header) => item[header] || '')
       })
