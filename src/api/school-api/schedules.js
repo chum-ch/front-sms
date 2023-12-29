@@ -1,6 +1,6 @@
 export default (axios)=>({
-    listSchedules(schoolId){
-        return axios.get(`schools/${schoolId}/schedules`)
+    listSchedules(schoolId, showLoading = {}){
+        return axios.get(`schools/${schoolId}/schedules`, showLoading)
     },
     createSchedule(schoolId, data){
         return axios.post(`schools/${schoolId}/schedules`, data)

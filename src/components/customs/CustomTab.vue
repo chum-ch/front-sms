@@ -11,10 +11,10 @@ import {
 } from 'vue'
 import { useRouter } from 'vue-router'
 onMounted(() => {
-  const defaultActive = props.dataTabs.find((item) => item.Active);
-  selectedComponent.value = defaultActive.Component;
+  const defaultActive = props.dataTabs.find((item) => item.Active)
+  selectedComponent.value = defaultActive.Component
 })
-defineEmits(['update:modelValue'])
+defineEmits(['update:modelValue', 'update:Component'])
 const props = defineProps({
   msg: {
     type: String,
@@ -49,6 +49,7 @@ if (!schoolBc) {
 }
 const showNav = (name) => {
   selectedComponent.value = name
+  instance.emit('update:Component', name)
 }
 defineExpose({})
 </script>
@@ -63,6 +64,7 @@ defineExpose({})
         ]"
       >
         <li
+          class=""
           v-for="(item, index) in dataTabs"
           :key="index"
           @click="showNav(item.Component)"
@@ -91,6 +93,7 @@ ul li {
   padding: 4px;
   margin: 0 4px;
   cursor: pointer;
+  color: blue;
   /* background: red; */
 }
 li.active {
