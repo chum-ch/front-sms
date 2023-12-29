@@ -48,35 +48,7 @@ const columnsRoom = ref([
     header: 'Floor'
   }
 ])
-const menuItems = ref([
-  {
-    label: 'File',
-    icon: 'pi pi-file',
-    items: [
-      {
-        label: 'Download',
-        icon: 'pi pi-download',
-        command: async () => {
-          downloadAllDataInTable()
-        }
-      },
-      {
-        label: 'Get template',
-        icon: 'pi pi-cloud-download',
-        command: async () => {
-          openDialogDownloadColumn()
-        }
-      },
-      {
-        label: 'Upload',
-        icon: 'pi pi-cloud-upload',
-        command: async () => {
-          openFileBrowser()
-        }
-      }
-    ]
-  }
-])
+
 
 const noted = [['Important noted'], ['- All column are required']]
 // Functions
@@ -136,7 +108,9 @@ const downloadDefaultTemplate = async () => {
 const downloadAllDataInTable = () => {
   const allDataInTable = selectedRooms.value.length > 0 ? selectedRooms.value : tableDataRooms.value
   const arrObjCol = $globalFunction.getDataForDownload(allDataInTable, columnsRoom.value)
-  $globalFunction.exportToExcel({ arrObjCol }, noted)
+  if (tableDataRooms.value.length > 0) {
+    $globalFunction.exportToExcel({ arrObjCol }, noted)
+  }
 }
 const processFileUpload = async (selectedFile) => {
   try {
@@ -170,12 +144,13 @@ const getDefaultColToDownload = async () => {
   origCol.value = [col]
   // checkBoxCategories.value = uploadRoom.data
 }
-const openDialogDownloadColumn = async () => {
+const openDialogDownloadDefaultTemplate = async () => {
   refToChildCustomDownloadColumn.value.openDialog()
   await getDefaultColToDownload()
 }
 const closeDialogDownloadColumn = () => {
   refToChildCustomDownloadColumn.value.closeDialog()
+  selectedCheckBox.value = [];
 }
 const getDataCheckBox = (col) => {
   selectedCheckBox.value = col
@@ -186,7 +161,6 @@ const getDataCheckBox = (col) => {
   <div class="room-list">
     <NavigationView :breadCrumb="breadCrumb" />
     <CustomProgressBar ref="refToChildProgressBar" @completedProgress="getListRooms" />
-
     <CustomUploadFile @uploadedFile="processFileUpload" ref="refToChildCustomFileUpload" hidden />
     <!-- <input type="file" id="fileUpload" ref="fileUpload" @change="processFileUpload" hidden /> -->
     <CustomTable
@@ -194,9 +168,10 @@ const getDataCheckBox = (col) => {
       :tableData="tableDataRooms"
       :columns="columnsRoom"
       :isShowUploadBtn="true"
-      :isShowDownloadTemplateBtn="true"
-      :menuItems="menuItems"
       :isShowFileMenu="true"
+      @downloadAllDataInTable="downloadAllDataInTable"
+      @uploadedExcelFile="openFileBrowser"
+      @downloadTemplateExcel="openDialogDownloadDefaultTemplate"
       @onClickCreate="createRoom"
       @onClickEdit="editRoom"
       @onClickDelete="openDialogDeleteRoom"

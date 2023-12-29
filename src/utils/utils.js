@@ -77,100 +77,63 @@ export default {
     return data
   },
   exportToExcel(data, noted = [[]]) {
-    const workbook = utils.book_new()
-
-    // Define the data to be saved
-    // const data = {
-    //   section1: [
-    //     {
-    //       A: "Unknown column.",
-    //       B: "Unknown column.",
-    //       C: "Unknown column.",
-    //       D: "Unknown column.",
-    //     }
-    //   ],
-    //   section2: [
-    //     {
-    //       RowNumber: 8,
-    //       Floor: "Cell required value."
-    //     },
-    //     {
-    //       RowNumber: 10,
-    //       Name: "Cell required value."
-    //     },
-    //     {
-    //       RowNumber: 11,
-    //       Floor: "Cell required value."
-    //     },
-    //     {
-    //       RowNumber: 13,
-    //       Name: "Cell required value."
-    //     },
-    //     {
-    //       RowNumber: 15,
-    //       Floor: "Cell required value."
-    //     }
-    //   ]
-    // };
-
-    // Create a new worksheet
-    const worksheet = utils.json_to_sheet([])
-    let rowNumber = 1
-    let numberToMerge = 0
-    for (const [index, [key, objData]] of Object.entries(data).entries()) {
-      // Extract headers
-            const headers = Array.from(new Set(objData.flatMap(Object.keys)))
-      const sectionData = objData.map((item) => {
-        return headers.map((header) => item[header] || '')
-      })
-      numberToMerge = headers.length - 1
-      // Calculate the starting row for each section
-      const origin = index === 0 ? 'A1' : `A${rowNumber + 4}`
-      rowNumber = objData.map(Object.values).length
-      console.log(headers.length)
+    if (Object.keys(data).length > 0) {
+      const workbook = utils.book_new()
       // Create a new worksheet
+      const worksheet = utils.json_to_sheet([])
+      let rowNumber = 1
+      let numberToMerge = 0
+      for (const [index, [key, objData]] of Object.entries(data).entries()) {
+        // Extract headers
+        const headers = Array.from(new Set(objData.flatMap(Object.keys)))
+        const sectionData = objData.map((item) => {
+          return headers.map((header) => item[header] || '')
+        })
+        numberToMerge = headers.length - 1
+        // Calculate the starting row for each section
+        const origin = index === 0 ? 'A1' : `A${rowNumber + 4}`
+        rowNumber = objData.map(Object.values).length
+        // Create a new worksheet
 
-      utils.sheet_add_aoa(worksheet, [...noted, [], [], headers, ...sectionData], {
-        origin: origin
-      })
-    }
-
-    // fine the merge range
-    for (let index = 0; index < noted.length; index++) {
-      const mergeRange = {
-        s: { r: index, c: 0 }, // Starting cell (column A, first row) s: start, e: end r: row, c: column,
-        e: { r: index, c: numberToMerge } // Ending cell (last column, last row)
+        utils.sheet_add_aoa(worksheet, [...noted, [], [], headers, ...sectionData], {
+          origin: origin
+        })
       }
-      // Merge cells vertically in the column
-      worksheet['!merges'] = [...(worksheet['!merges'] || []), mergeRange]
-    }
 
-    // Set column widths to fit the content
-    const columnWidths = []
-    const range = utils.decode_range(worksheet['!ref'])
-    for (let col = range.s.c; col <= range.e.c; col++) {
-      let maxLength = 0
-      for (let row = range.s.r; row <= range.e.r; row++) {
-        const cellAddress = utils.encode_cell({ r: row, c: col })
-        if (worksheet[cellAddress]) {
-          const cellValue = worksheet[cellAddress].v
-          const cellTextLength = cellValue ? cellValue.toString().length : 0
-          if (cellTextLength > maxLength) {
-            maxLength = cellTextLength
+      // fine the merge range
+      for (let index = 0; index < noted.length; index++) {
+        const mergeRange = {
+          s: { r: index, c: 0 }, // Starting cell (column A, first row) s: start, e: end r: row, c: column,
+          e: { r: index, c: numberToMerge } // Ending cell (last column, last row)
+        }
+        // Merge cells vertically in the column
+        worksheet['!merges'] = [...(worksheet['!merges'] || []), mergeRange]
+      }
+
+      // Set column widths to fit the content
+      const columnWidths = []
+      const range = utils.decode_range(worksheet['!ref'])
+      for (let col = range.s.c; col <= range.e.c; col++) {
+        let maxLength = 0
+        for (let row = range.s.r; row <= range.e.r; row++) {
+          const cellAddress = utils.encode_cell({ r: row, c: col })
+          if (worksheet[cellAddress]) {
+            const cellValue = worksheet[cellAddress].v
+            const cellTextLength = cellValue ? cellValue.toString().length : 0
+            if (cellTextLength > maxLength) {
+              maxLength = cellTextLength
+            }
           }
         }
+        columnWidths[col] = maxLength
       }
-      columnWidths[col] = maxLength
+      // Apply the column widths
+      worksheet['!cols'] = columnWidths.map((width) => ({ wch: width }))
+      // Add the worksheet to the workbook
+      const sheetName = 'ErrorData'
+      utils.book_append_sheet(workbook, worksheet, sheetName)
+      // Write the workbook to an Excel file
+      writeFile(workbook, `${this.generateFileName()}.xlsx`)
     }
-    // Apply the column widths
-    worksheet['!cols'] = columnWidths.map((width) => ({ wch: width }))
-    // Add the worksheet to the workbook
-    const sheetName = 'ErrorData'
-    utils.book_append_sheet(workbook, worksheet, sheetName)
-
-    // Define the output file path
-
-    // Write the workbook to an Excel file
-    writeFile(workbook, `${this.generateFileName()}.xlsx`)
   }
 }

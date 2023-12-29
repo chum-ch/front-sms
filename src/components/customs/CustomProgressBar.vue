@@ -22,7 +22,7 @@ const $globalFunction = inject('$globalFunction')
 const schoolId = route.currentRoute.value.params.schoolId
 const schoolBc = $globalFunction.getDataLs('schoolBc')
 const breadCrumb = ref([])
-const progress = ref(10)
+const progress = ref(0)
 const showProgressBar = ref(false)
 if (!schoolBc) {
   route.push('/')

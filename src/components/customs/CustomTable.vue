@@ -34,10 +34,6 @@ const props = defineProps({
     type: Boolean,
     required: false
   },
-  menuItems: {
-    type: Array,
-    required: false
-  },
   hasImage: {
     type: Boolean,
     default: () => true
@@ -49,6 +45,9 @@ defineEmits([
   'onClickDelete',
   'update:selection',
   'onClickDetails',
+  'downloadAllDataInTable',
+  'downloadTemplateExcel',
+  'uploadedExcelFile'
 ])
 onMounted(() => {
   // initFilters()
@@ -61,7 +60,36 @@ const filters = ref()
 const disabledDelete = ref(true)
 const disabledEdit = ref(true)
 const isGo = ref(true)
-
+const menuItems = ref([
+  {
+    label: 'File',
+    icon: 'pi pi-file',
+    items: [
+      {
+        label: 'Download',
+        disabled: true,
+        icon: 'pi pi-download',
+        command: async () => {
+          instance.emit('downloadAllDataInTable')
+        }
+      },
+      {
+        label: 'Get template',
+        icon: 'pi pi-cloud-download',
+        command: async () => {
+          instance.emit('downloadTemplateExcel')
+        }
+      },
+      {
+        label: 'Upload',
+        icon: 'pi pi-cloud-upload',
+        command: async () => {
+          instance.emit('uploadedExcelFile')
+        }
+      }
+    ]
+  }
+])
 // Function
 const onRowClick = (data) => {
   if (isGo.value) {
@@ -114,6 +142,21 @@ const initFilters = () => {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
   }
 }
+// Watcher function
+watch(() => props.tableData, (data) => {
+  for (const obj of menuItems.value) {
+    obj.items.forEach(item => {
+      const hasPropertyDisabled = Object.prototype.hasOwnProperty.call(item, 'disabled')
+      if (hasPropertyDisabled) {
+        item.disabled = true
+        if (data.length > 0) {
+          item.disabled = false
+        }
+      }
+      return item
+    });
+  }
+});
 initFilters()
 defineExpose({
   unSelectedAllRows
@@ -155,10 +198,7 @@ defineExpose({
           :disabled="disabledDelete"
           v-if="!isHideDeleteBtn"
         />
-        <CustomTieredMenu
-        :menuItems="menuItems"
-        v-if="isShowFileMenu"
-        />
+        <CustomTieredMenu :menuItems="menuItems" v-if="isShowFileMenu" />
       </div>
     </div>
     <DataTable
