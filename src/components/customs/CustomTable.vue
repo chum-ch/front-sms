@@ -221,7 +221,7 @@ defineExpose({
       tableStyle="min-width: 50rem"
       paginator
       paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-      currentPageReportTemplate="Showing from {first} to {last} of {totalRecords}"
+      currentPageReportTemplate="from {first} to {last} of {totalRecords}"
     >
       <template #empty>
         <div v-if="tableData.length !== 0" class="">
@@ -241,9 +241,11 @@ defineExpose({
     </DataTable>
   </div>
 </template>
-<style scoped>
+<style>
 @media (max-width: 600px) {
-  /* Styles applied for viewport width up to 767px */
+  .p-paginator-bottom .p-dropdown, .p-paginator-first, .p-paginator-last {
+    display: none;
+  }
   .flex {
     display: block;
   }

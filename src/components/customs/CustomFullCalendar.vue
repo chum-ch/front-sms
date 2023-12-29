@@ -33,7 +33,8 @@ export default defineComponent({
         height: 650,
         handleWindowResize: true,
         // navLinks: false, // can click day/week names to navigate views
-        // weekNumbers:true,
+        weekNumbers:true,
+        hiddenDays: [0, 7], // Exclude Sunday (0) and Saturday (6)
         // editable: true,
         // selectable: true,
         nowIndicator: true,
@@ -146,6 +147,9 @@ export default defineComponent({
   }
   .fc .fc-toolbar-title {
     font-size: 15px;
+  }
+  tr a {
+    font-size: 12px;
   }
 }
 </style>
