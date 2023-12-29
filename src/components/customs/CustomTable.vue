@@ -30,9 +30,13 @@ const props = defineProps({
     type: Boolean,
     required: false
   },
+  isShowFileMenu: {
+    type: Boolean,
+    required: false
+  },
   menuItems: {
     type: Array,
-    required: true
+    required: false
   },
   hasImage: {
     type: Boolean,
@@ -153,6 +157,7 @@ defineExpose({
         />
         <CustomTieredMenu
         :menuItems="menuItems"
+        v-if="isShowFileMenu"
         />
       </div>
     </div>

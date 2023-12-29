@@ -196,6 +196,7 @@ const getDataCheckBox = (col) => {
       :isShowUploadBtn="true"
       :isShowDownloadTemplateBtn="true"
       :menuItems="menuItems"
+      :isShowFileMenu="true"
       @onClickCreate="createRoom"
       @onClickEdit="editRoom"
       @onClickDelete="openDialogDeleteRoom"
