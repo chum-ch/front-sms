@@ -49,7 +49,7 @@ const columnsStudent = ref([
     header: 'First name'
   },
   {
-    field: 'Gender',
+    field: 'Gender.Value',
     header: 'Gender'
   },
   {
