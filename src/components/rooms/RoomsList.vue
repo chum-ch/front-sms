@@ -38,7 +38,6 @@ if (!schoolBc) {
 // Table
 const tableDataRooms = ref([])
 const selectedRooms = ref([])
-const disabledBtnDownload = ref(true)
 const columnsRoom = ref([
   {
     field: 'Name',
@@ -131,13 +130,13 @@ const updatedRoom = () => {
 }
 const downloadDefaultTemplate = async () => {
   const arrObjCol = $globalFunction.getDataForDownload(origCol.value, selectedCheckBox.value)
-  $globalFunction.exportExcelFile(arrObjCol, noted)
+  $globalFunction.exportToExcel({ arrObjCol }, noted)
   closeDialogDownloadColumn()
 }
 const downloadAllDataInTable = () => {
   const allDataInTable = selectedRooms.value.length > 0 ? selectedRooms.value : tableDataRooms.value
   const arrObjCol = $globalFunction.getDataForDownload(allDataInTable, columnsRoom.value)
-  $globalFunction.exportExcelFile(arrObjCol, noted)
+  $globalFunction.exportToExcel({ arrObjCol }, noted)
 }
 const processFileUpload = async (selectedFile) => {
   try {
@@ -151,7 +150,10 @@ const processFileUpload = async (selectedFile) => {
       refToChildProgressBar.value.checkProgress(URLRoomProgress)
     }
   } catch (error) {
-    console.error('Upload error', error)
+    const { ErrorColumnHeaders, ErrorRows } = error.response.data
+    if (ErrorColumnHeaders || ErrorRows) {
+      $globalFunction.exportToExcel({ ErrorColumnHeaders, ErrorRows })
+    }
   }
 }
 const openFileBrowser = () => {
