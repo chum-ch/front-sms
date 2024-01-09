@@ -15,7 +15,16 @@ defineProps({
   isFlex: {
     type: Boolean,
     required: false
-  }
+  },
+  showCheckAll: {
+    type: Boolean,
+    required: false
+  },
+  showAutoCheck: {
+    type: Boolean,
+    required: false
+  },
+  autoSelectLabel: String
 })
 // Variable
 const instance = getCurrentInstance();
@@ -28,20 +37,23 @@ if (!schoolBc) {
   route.push('/')
 }
 const getDataCheckBox = (data)=>{
-  const modifiedData = data.reduce((acc, { Value }) => {
-  return [...acc, { field: Value }];
-}, []);
+  const modifiedData = data.reduce((acc, { field }) => {
+    return [...acc, { field }];
+  }, []);
 instance.emit('getDataCheckBox', modifiedData)
 }
 defineExpose({});
 </script>
 
 <template>
-  <div class="greetings">
+  <div class="custom-download">
   <CustomCheckBox
   :checkBoxCategories="checkBoxCategories"
   @update:modelValue="getDataCheckBox"
   :isFlex="isFlex"
+  :showCheckAll="showCheckAll"
+  :showAutoCheck="showAutoCheck"
+  :autoSelectLabel="autoSelectLabel"
   />
   </div>
 </template>

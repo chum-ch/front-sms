@@ -53,28 +53,62 @@ export default {
   },
   // This function is prepare and return array object then passed to component check box e.g: [ { Value: 7}].
   getArrObjForCheckBox(obj) {
-    const arrObjCheckBox = Object.keys(obj).map((item) => ({ Value: item.replace('*', '') }))
-    return arrObjCheckBox
-  },
-  // This function is prepare and return array object then passed to component for download excel. [ { Name: 'A', Floor: 2 }]
-  getDataForDownload(arrObjOriginal, arrObjCheckBox) {
-    const data = []
-    for (const objField of arrObjOriginal) {
-      const result = {}
-      for (const item of arrObjCheckBox) {
-        const key = item.field
-        const hasPropertyWithStart = Object.prototype.hasOwnProperty.call(objField, `${key}*`)
-        if (hasPropertyWithStart && objField[`${key}*`]) {
-          result[`${key}*`] = objField[`${key}*`]
-        } else if (objField[key]) {
-          result[key] = objField[key]
-        }
-      }
-      if (Object.keys(result).length > 0) {
-        data.push(result)
+    const result = {
+      ColAutoSelected: [],
+      CustomCol: [],
+      AllColumns: []
+    }
+    const { ColumnHeader } = obj
+    let concatenatedLabel = ''
+    for (const [key, objData] of Object.entries(ColumnHeader)) {
+      const { Rules } = objData
+      const isRequired = Rules.some((item) => item.Required)
+      if (isRequired && objData.Value && objData.Label) {
+        result.ColAutoSelected.push({
+          [`${key}*`]: objData.Value,
+          Label: objData.Label,
+          field: `${key}*`
+        })
+        result.AllColumns.push({ [`${key}*`]: objData.Value })
+        concatenatedLabel += objData.Label + ', '
+      } else {
+        result.AllColumns.push({ [key]: objData.Value })
+        result.CustomCol.push({ [key]: objData.Value, Label: objData.Label, field: key })
       }
     }
-    return data
+    // Remove the trailing comma and space
+    if (result.ColAutoSelected.length > 0) {
+      concatenatedLabel = concatenatedLabel.slice(0, -2)
+      result.AutoSelectLabel = concatenatedLabel
+    }
+    if (result.AllColumns.length > 0 ){
+      const mergedObject = result.AllColumns.reduce((result, currentObj) => {
+        return { ...result, ...currentObj };
+      }, {});
+      result.AllColumns = [mergedObject]
+    }
+    return result
+  },
+  // This function is prepare and return array object then passed to component for download excel. [ { Name: 'A', Floor: 2 }]
+  getDataForDownload(arrObjOriginal, arrObjField) {
+    const extractedData = arrObjOriginal.map((item) => {
+      const extractedItem = {};
+      arrObjField.forEach((definition) => {
+        const fields = definition.field.split('.');
+        let value = item;
+        let key = fields[0];
+        fields.forEach((field) => {
+          if (value && value.hasOwnProperty(field)) {
+            value = value[field];
+          } else {
+            value = undefined;
+          }
+        });
+        extractedItem[key] = value;
+      });
+      return extractedItem;
+    });
+    return extractedData;
   },
   exportToExcel(data, noted = [[]]) {
     if (Object.keys(data).length > 0) {
@@ -125,12 +159,12 @@ export default {
             }
           }
         }
-        columnWidths[col] = maxLength
+        columnWidths[col] = maxLength + 1
       }
       // Apply the column widths
       worksheet['!cols'] = columnWidths.map((width) => ({ wch: width }))
       // Add the worksheet to the workbook
-      const sheetName = 'ErrorData'
+      const sheetName = 'Sheet1'
       utils.book_append_sheet(workbook, worksheet, sheetName)
       // Write the workbook to an Excel file
       writeFile(workbook, `${this.generateFileName()}.xlsx`)

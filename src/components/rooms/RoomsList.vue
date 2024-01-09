@@ -14,14 +14,21 @@ const $globalFunction = inject('$globalFunction')
 // Ref child
 const refToChildRoomForm = ref()
 const refToChildCustomDialogDeleteRoomForm = ref()
-const refToChildCustomDownloadColumn = ref()
-const checkBoxCategories = ref([])
 const selectedCheckBox = ref([])
 const origCol = ref([])
 const refToChildCustomTable = ref()
 const refToChildProgressBar = ref()
+
+// Process file
 const refToChildCustomFileUpload = ref()
-const fileUpload = ref()
+const refToChildCustomDownloadColumn = ref()
+const checkBoxCategories = ref([])
+const customSelectedCheckBox = ref([])
+const autoSelectedCheckBox = ref([])
+const allColumnsTemplate = ref([])
+const autoSelectLabel = ref('')
+const noted = [['Important noted'], ['- All column are required']]
+
 // Breadcrumb
 const schoolId = route.currentRoute.value.params.schoolId
 const schoolBc = $globalFunction.getDataLs('schoolBc')
@@ -50,7 +57,6 @@ const columnsRoom = ref([
 ])
 
 
-const noted = [['Important noted'], ['- All column are required']]
 // Functions
 const getListRooms = async () => {
   try {
@@ -100,24 +106,58 @@ const unSelectRowRoom = () => {
 const updatedRoom = () => {
   getListRooms()
 }
-const downloadDefaultTemplate = async () => {
-  const arrObjCol = $globalFunction.getDataForDownload(origCol.value, selectedCheckBox.value)
-  $globalFunction.exportToExcel({ arrObjCol }, noted)
-  closeDialogDownloadColumn()
+
+// Process file
+const getDataCheckBox = (col) => {
+  customSelectedCheckBox.value = []
+  customSelectedCheckBox.value = [...autoSelectedCheckBox.value, ...col]
+}
+const closeDialogDownloadColumn = () => {
+  refToChildCustomDownloadColumn.value.closeDialog()
+}
+const openFileBrowser = () => {
+  refToChildCustomFileUpload.value.openFileBrowser()
 }
 const downloadAllDataInTable = () => {
-  const allDataInTable = selectedRooms.value.length > 0 ? selectedRooms.value : tableDataRooms.value
+  const allDataInTable =
+    selectedRooms.value.length > 0 ? selectedRooms.value : tableDataRooms.value
   const arrObjCol = $globalFunction.getDataForDownload(allDataInTable, columnsRoom.value)
   if (tableDataRooms.value.length > 0) {
     $globalFunction.exportToExcel({ arrObjCol }, noted)
   }
+}
+const openDialogDownloadDefaultTemplate = async () => {
+  refToChildCustomDownloadColumn.value.openDialog()
+  let downloadTemplate = await $api.room.downloadColumnTemplate(schoolId, { showLoading: false })
+  const { data } = downloadTemplate
+  const arrObjCheckBox = $globalFunction.getArrObjForCheckBox(data)
+  const { CustomCol, ColAutoSelected, AllColumns } = arrObjCheckBox
+  if (CustomCol.length > 0 || ColAutoSelected.length > 0) {
+    checkBoxCategories.value = CustomCol
+    autoSelectedCheckBox.value = ColAutoSelected
+    customSelectedCheckBox.value = ColAutoSelected
+  }
+  allColumnsTemplate.value = AllColumns
+  autoSelectLabel.value = arrObjCheckBox.AutoSelectLabel
+}
+const downloadDefaultTemplate = async () => {
+  const arrObjCol = $globalFunction.getDataForDownload(
+    allColumnsTemplate.value,
+    customSelectedCheckBox.value
+  )
+  $globalFunction.exportToExcel({ arrObjCol }, noted)
+  closeDialogDownloadColumn()
+}
+
+const clearFileSelected = () => {
+  refToChildCustomFileUpload.value.clearFileSelected()
 }
 const processFileUpload = async (selectedFile) => {
   try {
     clearFileSelected()
     const formData = new FormData()
     formData.append('uploadedFile', selectedFile)
-    let uploadRoom = await $api.room.uploadFile(schoolId, formData)
+    let uploadRoom = await $api.room.uploadFile(schoolId, formData, { showLoading: false})
     if (uploadRoom && uploadRoom.data) {
       const { PROGRESSES_ID } = uploadRoom.data
       const URLRoomProgress = `/progresses/${PROGRESSES_ID}/room-progresses`
@@ -130,31 +170,7 @@ const processFileUpload = async (selectedFile) => {
     }
   }
 }
-const openFileBrowser = () => {
-  refToChildCustomFileUpload.value.openFileBrowser()
-}
-const clearFileSelected = () => {
-  refToChildCustomFileUpload.value.clearFileSelected()
-}
-const getDefaultColToDownload = async () => {
-  let uploadRoom = await $api.room.downloadColumnTemplate(schoolId)
-  const col = uploadRoom.data
-  const arrObjCheckBox = $globalFunction.getArrObjForCheckBox(col)
-  checkBoxCategories.value = arrObjCheckBox
-  origCol.value = [col]
-  // checkBoxCategories.value = uploadRoom.data
-}
-const openDialogDownloadDefaultTemplate = async () => {
-  refToChildCustomDownloadColumn.value.openDialog()
-  await getDefaultColToDownload()
-}
-const closeDialogDownloadColumn = () => {
-  refToChildCustomDownloadColumn.value.closeDialog()
-  selectedCheckBox.value = [];
-}
-const getDataCheckBox = (col) => {
-  selectedCheckBox.value = col
-}
+//
 </script>
 
 <template>
@@ -197,9 +213,9 @@ const getDataCheckBox = (col) => {
     <CustomDialog
       ref="refToChildCustomDownloadColumn"
       @onClickDialogSubmit="downloadDefaultTemplate"
-      @onClickCloseDialog="closeDialogDownloadColumn()"
+      @onClickCloseDialog="closeDialogDownloadColumn"
       :footerLabel="'Download'"
-      :disabledSubmitBtn="selectedCheckBox.length === 0"
+      :disabledSubmitBtn="customSelectedCheckBox.length === 0 && autoSelectedCheckBox.length === 0"
       :modalHeader="'Customize column'"
     >
       <template #bodyDialog>
@@ -207,6 +223,9 @@ const getDataCheckBox = (col) => {
           :checkBoxCategories="checkBoxCategories"
           @getDataCheckBox="getDataCheckBox"
           :isFlex="true"
+          :showCheckAll="checkBoxCategories.length > 0"
+          :showAutoCheck="autoSelectedCheckBox.length > 0"
+          :autoSelectLabel="autoSelectLabel"
         />
       </template>
     </CustomDialog>

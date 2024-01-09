@@ -1,9 +1,9 @@
 export default (axios)=>({
-    downloadColumnTemplate(schoolId){
-        return axios.get(`/schools/${schoolId}/download-rooms`, { showLoading: false })
+    downloadColumnTemplate(schoolId, showLoading){
+        return axios.get(`/schools/${schoolId}/download-rooms`, showLoading)
     },
-    uploadFile(schoolId, data){
-        return axios.post(`/schools/${schoolId}/upload-rooms`, data, { showLoading: false })
+    uploadFile(schoolId, data, showLoading){
+        return axios.post(`/schools/${schoolId}/upload-rooms`, data, showLoading)
     },
     listRooms(schoolId){
         return axios.get(`/schools/${schoolId}/rooms`)

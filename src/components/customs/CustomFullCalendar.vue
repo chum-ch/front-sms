@@ -151,5 +151,8 @@ export default defineComponent({
   tr a {
     font-size: 12px;
   }
+  .fc-event-title-container {
+  font-size: 11px;
+}
 }
 </style>

@@ -1,4 +1,10 @@
 export default (axios)=>({
+    downloadColumnTemplate(schoolId, showLoading = {}){
+        return axios.get(`/schools/${schoolId}/download-schedules`, showLoading)
+    },
+    uploadFile(schoolId, data, showLoading = {}){
+        return axios.post(`/schools/${schoolId}/upload-schedules`, data, showLoading)
+    },
     listSchedules(schoolId, showLoading = {}){
         return axios.get(`schools/${schoolId}/schedules`, showLoading)
     },

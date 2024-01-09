@@ -24,6 +24,17 @@ const breadCrumb = ref([])
 const refToChildCustomDialogDeleteSchedule = ref()
 const refToChildScheduleForm = ref()
 const refToChildCustomTable = ref()
+const refToChildProgressBar = ref()
+// Process file
+const refToChildCustomFileUpload = ref()
+const refToChildCustomDownloadColumn = ref()
+const checkBoxCategories = ref([])
+const customSelectedCheckBox = ref([])
+const autoSelectedCheckBox = ref([])
+const allColumnsTemplate = ref([])
+const autoSelectLabel = ref('')
+const noted = [['Important noted'], ['- All column are required']]
+
 if (!schoolBc) {
   route.push('/')
 } else {
@@ -137,6 +148,70 @@ const closeDialogDeleteSchedule = () => {
   refToChildCustomDialogDeleteSchedule.value.closeDialog()
   unSelectRowSchedule()
 }
+// Process file
+const getDataCheckBox = (col) => {
+  customSelectedCheckBox.value = []
+  customSelectedCheckBox.value = [...autoSelectedCheckBox.value, ...col]
+}
+const closeDialogDownloadColumn = () => {
+  refToChildCustomDownloadColumn.value.closeDialog()
+}
+const openFileBrowser = () => {
+  refToChildCustomFileUpload.value.openFileBrowser()
+}
+const downloadAllDataInTable = () => {
+  const allDataInTable =
+    selectedSchedules.value.length > 0 ? selectedSchedules.value : tableDataSchedules.value
+  const arrObjCol = $globalFunction.getDataForDownload(allDataInTable, columnsSchedules.value)
+  if (tableDataSchedules.value.length > 0) {
+    $globalFunction.exportToExcel({ arrObjCol }, noted)
+  }
+}
+const openDialogDownloadDefaultTemplate = async () => {
+  refToChildCustomDownloadColumn.value.openDialog()
+  let downloadTemplate = await $api.schedule.downloadColumnTemplate(schoolId, { showLoading: false })
+  const { data } = downloadTemplate
+  const arrObjCheckBox = $globalFunction.getArrObjForCheckBox(data)
+  const { CustomCol, ColAutoSelected, AllColumns } = arrObjCheckBox
+  if (CustomCol.length > 0 || ColAutoSelected.length > 0) {
+    checkBoxCategories.value = CustomCol
+    autoSelectedCheckBox.value = ColAutoSelected
+    customSelectedCheckBox.value = ColAutoSelected
+  }
+  allColumnsTemplate.value = AllColumns
+  autoSelectLabel.value = arrObjCheckBox.AutoSelectLabel
+}
+const downloadDefaultTemplate = async () => {
+  const arrObjCol = $globalFunction.getDataForDownload(
+    allColumnsTemplate.value,
+    customSelectedCheckBox.value
+  )
+  $globalFunction.exportToExcel({ arrObjCol }, noted)
+  closeDialogDownloadColumn()
+}
+
+const clearFileSelected = () => {
+  refToChildCustomFileUpload.value.clearFileSelected()
+}
+const processFileUpload = async (selectedFile) => {
+  try {
+    clearFileSelected()
+    const formData = new FormData()
+    formData.append('uploadedFile', selectedFile)
+    let uploadSchedule = await $api.schedule.uploadFile(schoolId, formData, { showLoading: false})
+    console.log(uploadSchedule);
+    if (uploadSchedule && uploadSchedule.data) {
+      const { PROGRESSES_ID } = uploadSchedule.data
+      const URLRoomProgress = `/progresses/${PROGRESSES_ID}/schedule-progresses`
+      refToChildProgressBar.value.checkProgress(URLRoomProgress)
+    }
+  } catch (error) {
+    const { data } = error.response
+    if (typeof data === 'object' && Object.keys(data).length > 0) {
+      $globalFunction.exportToExcel(data)
+    }
+  }
+}
 
 defineExpose({})
 </script>
@@ -145,6 +220,7 @@ defineExpose({})
   <div>
     <!-- Navigation with breadCrumb  -->
     <NavigationView :breadCrumb="breadCrumb" />
+    <CustomProgressBar ref="refToChildProgressBar" @completedProgress="listSchedules" />
     <CustomTab
       :dataTabs="dataTabs"
       class="pe-2"
@@ -153,11 +229,16 @@ defineExpose({})
       @update:Component="updateComponent"
     ></CustomTab>
     <div>
+      <CustomUploadFile @uploadedFile="processFileUpload" ref="refToChildCustomFileUpload" hidden />
       <!-- Table  -->
       <CustomTable
         ref="refToChildCustomTable"
         :tableData="tableDataSchedules"
         :columns="columnsSchedules"
+        :isShowFileMenu="true"
+        @downloadAllDataInTable="downloadAllDataInTable"
+        @uploadedExcelFile="openFileBrowser"
+        @downloadTemplateExcel="openDialogDownloadDefaultTemplate"
         @update:selection="selectedRowData"
         @onClickCreate="onClickCreateSchedule"
         @onClickEdit="onClickEditSchedule"
@@ -184,6 +265,26 @@ defineExpose({})
     <!-- Component  -->
     <!-- Child schedule form  -->
     <ScheduleForm ref="refToChildScheduleForm" @updatedSchedule="updatedSchedule" />
+    <!-- Dialog download column  -->
+    <CustomDialog
+      ref="refToChildCustomDownloadColumn"
+      @onClickDialogSubmit="downloadDefaultTemplate"
+      @onClickCloseDialog="closeDialogDownloadColumn"
+      :footerLabel="'Download'"
+      :disabledSubmitBtn="customSelectedCheckBox.length === 0 && autoSelectedCheckBox.length === 0"
+      :modalHeader="'Customize column'"
+    >
+      <template #bodyDialog>
+        <CustomColumnDownload
+          :checkBoxCategories="checkBoxCategories"
+          @getDataCheckBox="getDataCheckBox"
+          :isFlex="true"
+          :showCheckAll="checkBoxCategories.length > 0"
+          :showAutoCheck="autoSelectedCheckBox.length > 0"
+          :autoSelectLabel="autoSelectLabel"
+        />
+      </template>
+    </CustomDialog>
   </div>
 </template>
 

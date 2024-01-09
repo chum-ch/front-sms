@@ -93,12 +93,12 @@ ul li {
   padding: 4px;
   margin: 0 4px;
   cursor: pointer;
-  color: blue;
+  color: var(--primary-color);
   /* background: red; */
 }
 li.active {
   border-bottom: 4px solid;
-  color: var(--primary-color);
+  
   border-radius: 5px;
 }
 </style>

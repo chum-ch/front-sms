@@ -1,7 +1,7 @@
 <template>
   <div class="p-fluid">
     <label v-if="label !== ''" class="mb-2" :class="hideLabel ? 'd-none' : ''">{{ label }} </label>
-    <div class="mb-5">
+    <div class="mb-5" v-show="showCheckAll">
       <PrimeVueCheckbox
         :binary="true"
         v-model="checked"
@@ -10,18 +10,29 @@
       />
       <label for="checkAll" class="ml-2">Check All</label>
     </div>
+    <div class="mb-2" v-if="autoSelectLabel">
+      <PrimeVueCheckbox
+        v-show="showAutoCheck"
+        v-model="dataAutoCheck"
+        :value="'AutoCheck'"
+        inputId="checkAll"
+        :binary="false"
+        disabled
+      />
+      <label for="" class="ml-2">Required ({{ autoSelectLabel }})</label>
+    </div>
     <div :class="isFlex ? 'flex flex-wrap gap-3' : 'flex flex-column flex-wrap row-gap-2'">
       <div v-for="(item, index) in checkBoxCategories" :key="index" class="flex align-items-center">
         <PrimeVueCheckbox
           v-model="values"
-          :inputId="item.Value"
+          :inputId="item.Label ? item.Label : item.Value"
           name="checkBox"
           :value="item"
           :disabled="item.Disable"
           @input="inputValue"
         />
-        <label :for="item.Value" class="ml-2" :style="item.Disable ? objectStyleCSS : ''">{{
-          item.Value
+        <label :for="item.Label ? item.Label : item.Value" class="ml-2" :style="item.Disable ? objectStyleCSS : ''">{{
+          item.Label ? item.Label : item.Value
         }}</label>
       </div>
     </div>
@@ -34,7 +45,7 @@ export default {
   data() {
     return {
       values: this.defaultValue ? this.defaultValue : [],
-      selectedAllItems: [],
+      dataAutoCheck: ['AutoCheck'],
       checked: false,
       p_invalid: '',
       objectStyleCSS: {
@@ -49,7 +60,10 @@ export default {
     label: String,
     isFlex: Boolean,
     hideLabel: Boolean,
-    modelValue: [String, Number, Object]
+    modelValue: [String, Number, Object],
+    showCheckAll: Boolean,
+    showAutoCheck: Boolean,
+    autoSelectLabel: String
   },
   emits: ['update:modelValue'],
   watch: {
