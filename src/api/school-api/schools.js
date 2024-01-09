@@ -1,6 +1,6 @@
 export default (axios)=>({
     listSchools(){
-        return axios.get(`/schools`)
+        return axios.get(`/schools`, { showLoading: false })
     },
     createSchool(data){
         return axios.post(`/schools`, data)
