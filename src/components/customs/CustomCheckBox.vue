@@ -10,7 +10,7 @@
       />
       <label for="checkAll" class="ml-2">Check All</label>
     </div>
-    <div class="mb-2" v-if="autoSelectLabel">
+    <div class="mb-2 flex" v-if="autoSelectLabel">
       <PrimeVueCheckbox
         v-show="showAutoCheck"
         v-model="dataAutoCheck"
@@ -18,6 +18,7 @@
         inputId="checkAll"
         :binary="false"
         disabled
+        class=""
       />
       <label for="" class="ml-2">Required ({{ autoSelectLabel }})</label>
     </div>

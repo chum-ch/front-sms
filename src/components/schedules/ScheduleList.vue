@@ -199,7 +199,6 @@ const processFileUpload = async (selectedFile) => {
     const formData = new FormData()
     formData.append('uploadedFile', selectedFile)
     let uploadSchedule = await $api.schedule.uploadFile(schoolId, formData, { showLoading: false})
-    console.log(uploadSchedule);
     if (uploadSchedule && uploadSchedule.data) {
       const { PROGRESSES_ID } = uploadSchedule.data
       const URLRoomProgress = `/progresses/${PROGRESSES_ID}/schedule-progresses`
