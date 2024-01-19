@@ -13,26 +13,21 @@
         @click="submit"
         :label="'Save exam'"
         :warning="true"
-        :disabled="
-          schemaExam.Questions.length === 0 ||
-          schemaExam.ExamDate === '' ||
-          schemaExam.StartTime === '' ||
-          schemaExam.EndTime === '' ||
-          schemaExam.ExamTitle === ''
-        "
+        :disabled="schemaExam.Questions.length === 0"
       />
     </div>
     <div class="col-6 scroll-div py-0">
       <div class="qa">
-        <div class="sticky top-0 z-2 bg-white mt-2">
+        <div class="sticky top-0 z-2 bg-white">
           <p class="m-0 fw-bolder fs-4">Question section</p>
-          <CustomInputText
+          <PrimeVueDivider class="mb-2" />
+          <!-- <CustomInputText
             :placeholder="'Exam title'"
             class=""
             :hideLabel="true"
             v-model="schemaExam.ExamTitle"
             :messageError="message.Date"
-          />
+          /> -->
         </div>
         <div
           class="my-2 all-question px-3 scroll-container"
@@ -42,7 +37,7 @@
           ref="scrollTest"
         >
           <div
-            class="all-checkbox card mx-auto p-2 my-4 border-2 border-round-md border-primary-500"
+            class="all-checkbox card mx-auto p-2 my-2 border-2 border-round-md border-primary-500"
           >
             <input
               type="text"
@@ -85,10 +80,10 @@
                 <input
                   v-else
                   type="text"
+                  ref="inputRefs"
                   v-model="itemOption.Text"
                   :placeholder="'Answer'"
                   class="ml-2"
-                  ref="inputRefs"
                   :class="itemOption.IsCorrect ? 'focus' : 'custom-inpute-text'"
                   :disabled="itemOption.IsCorrect"
                   @keyup.enter="addQuestSection(itemQuestion, indexQuestion)"
@@ -114,7 +109,7 @@
               <div class="flex">
                 <CustomButton
                   @click="chooseAnswer(indexQuestion)"
-                  :label="itemQuestion.Disabled ? 'Correct answer' : 'Save'"
+                  :label="itemQuestion.Disabled ? 'Answer' : 'Save'"
                   v-show="itemQuestion.Type !== 'Answer'"
                   class="mr-2"
                   :style="{ padding: '7px', marginTop: '5px' }"
@@ -157,9 +152,9 @@
       <div ref="scrollTarget"></div>
     </div>
 
-    <div v-show="true" class="col-4 scroll-div">
+    <div v-show="true" class="col-4 scroll-div summary py-0">
       <div class="sticky top-0 bg-white w-full bg-white">
-        <div class="sticky top-0 z-2 bg-white m-0">
+        <!-- <div class="sticky top-0 z-2 bg-white m-0">
           <p class="m-0 fw-bolder fs-5">Summary</p>
           <div class="row">
             <CustomCalendar
@@ -194,7 +189,7 @@
               class="mt-2"
             />
           </div>
-        </div>
+        </div> -->
         <div class="flex justify-content-between">
           <p class="m-0">
             Total question:
@@ -219,14 +214,39 @@
       </ol>
     </div>
   </div>
+  <div v-if="isMobile">
+    <!-- ||
+        schemaExam.ExamDate === '' ||
+        schemaExam.StartTime === '' ||
+        schemaExam.EndTime === '' ||
+        schemaExam.ExamTitle === '' -->
+    <CustomButton
+      @click="submit"
+      :label="'Save exam'"
+      :warning="true"
+      :disabled="schemaExam.Questions.length === 0"
+      class="absolute bottom-0 left-0 m-3"
+    />
+    <PrimeVueSpeedDial
+      :model="itemTest"
+      :radius="80"
+      type="quarter-circle"
+      direction="up-left"
+      :style="{ right: 0, bottom: 0 }"
+      class="m-3"
+    />
+  </div>
 </template>
 <script setup>
-import { reactive, ref, inject, provide, getCurrentInstance, watch, nextTick } from 'vue'
-
+import { reactive, onMounted, ref, inject, provide, getCurrentInstance, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 defineEmits([''])
 defineProps({})
+onMounted(() => {
+  const { matches } = window.matchMedia('(max-width: 767px)') // Adjust the breakpoint as needed
+  isMobile.value = matches
+})
 // Variable
 const instance = getCurrentInstance()
 const route = useRouter()
@@ -235,6 +255,7 @@ const $globalFunction = inject('$globalFunction')
 const schoolId = route.currentRoute.value.params.schoolId
 const schoolBc = $globalFunction.getDataLs('schoolBc')
 const breadCrumb = ref([])
+const isMobile = ref(false)
 if (!schoolBc) {
   route.push('/')
 } else {
@@ -270,6 +291,32 @@ const schemaExam = ref({
 })
 // Error message
 const message = ref({})
+const itemTest = ref([
+  {
+    label: 'Radio',
+    icon: 'pi pi-circle-fill',
+    command: () => {
+      const radio = getDefaultDataTypeOption()
+      addQuestSection(radio)
+    }
+  },
+  {
+    label: 'Checkbox',
+    icon: 'pi pi-check-square',
+    command: () => {
+      const checkbox = getDefaultDataTypeCheckbox()
+      addQuestSection(checkbox)
+    }
+  },
+  {
+    label: 'Answer',
+    icon: 'pi pi-question',
+    command: () => {
+      const question = getDefaultDataTypeAnswer()
+      addQuestSection(question)
+    }
+  }
+])
 const getDefaultDataTypeAnswer = () => {
   return {
     Type: 'Answer',
@@ -347,31 +394,19 @@ const submit = async () => {
     }
   }
 }
-const getRefName = (indexQuestion = '', indexOption) => {
-  inputRefs.value = `inputRefs_${indexQuestion}_${indexOption}`
-  return inputRefs.value
-}
+// const getRefName = (indexQuestion = '', indexOption) => {
+//   inputRefs.value = `inputRefs_${indexQuestion}_${indexOption}`
+//   return inputRefs.value
+// }
 const addQuestSection = (data, indexQuestion = '') => {
   if (indexQuestion || indexQuestion === 0) {
     schemaExam.value.Questions[indexQuestion].Options.push({
       Text: '',
       IsCorrect: false
     })
-    // nextTick(() => {
-    //   inputRefs.value.focus()
-    // })
-    // nextTick(() => {
-    //   const lastIndexOption = schemaExam.value.Questions[indexQuestion].Options.length - 1
-    //   getRefName(indexQuestion, lastIndexOption)
-    //   const newOptionRef = [inputRefs.value]
-    //   if (newOptionRef && newOptionRef[0]) {
-    //     newOptionRef[0].focus()
-    //     newOptionRef[0].setSelectionRange(
-    //       newOptionRef[0].value.length,
-    //       newOptionRef[0].value.length
-    //     )
-    //   }
-    // })
+    nextTick(() => {
+      inputRefs.value[inputRefs.value.length - 1].focus()
+    })
   } else {
     schemaExam.value.Questions.push(data)
     scrollTest.value
@@ -429,13 +464,12 @@ defineExpose({})
 .scroll-container {
   overflow-y: auto;
 }
-.grid {
-  scroll-behavior: smooth;
-}
-
 input {
   border: none;
   outline: none;
+}
+.hidden {
+  display: none;
 }
 .custom-inpute-text {
   border-bottom: 1px solid var(--primary-500);
@@ -468,5 +502,20 @@ input {
   overflow: scroll;
   /* Add scrollbar to the div when its height exceded 150px*/
   /* Can be used horizanlty or vertically according to your layout*/
+}
+@media (max-width: 600px) {
+  .scroll-div {
+    /* display: block; */
+    padding: 0;
+    width: 100%;
+  }
+  .hidden {
+    display: flex;
+  }
+  /* Styles applied for viewport width up to 767px */
+  .add-qa,
+  .summary {
+    display: none;
+  }
 }
 </style>

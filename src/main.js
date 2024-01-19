@@ -32,6 +32,7 @@ import ProgressBar from 'primevue/progressbar';
 import FileUpload from 'primevue/fileupload';
 import Menubar from 'primevue/menubar';
 import TieredMenu from 'primevue/tieredmenu';
+import SpeedDial from 'primevue/speeddial';
 // Custom component
 
 // Custom component
@@ -86,6 +87,7 @@ app.component('PrimeVueProgressBar', ProgressBar);
 app.component('PrimeVueFileUpload', FileUpload);
 app.component('PrimeVueMenubar', Menubar);
 app.component('PrimeVueTieredMenu', TieredMenu);
+app.component('PrimeVueSpeedDial', SpeedDial);
 
 
 // Custom

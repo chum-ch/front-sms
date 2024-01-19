@@ -1,5 +1,5 @@
 <template>
-  <div class="card w-8 mx-auto my-1 listQa text-justify py-3 px-7">
+  <div class="card mx-auto my-1 listQa text-justify py-3">
     <div>
       <h1 class="text-center">{{ examSections.ExamTitle }}</h1>
       <PrimeVueDivider />
@@ -98,7 +98,7 @@ const addUserAnswer = (examSchema, questionType, answer, indexQa) => {
     }
   })
 }
-const submitAnswer = async(answer) => {
+const submitAnswer = async (answer) => {
   const { data } = await $api.exam.submitExam(schoolId, examId, answer)
   console.log(data)
 }
@@ -112,5 +112,13 @@ defineExpose({})
   border: 5px solid var(--primary-color);
   border-width: 5px 2px 2px 2px;
   border-radius: 10px;
+  width: 65%;
+  padding: 0 2.5rem;
+}
+@media (max-width: 885px) {
+  /* Styles applied for viewport width up to 767px */
+  .listQa {
+    width: 90%;
+  }
 }
 </style>
