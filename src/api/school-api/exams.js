@@ -2,6 +2,9 @@ export default (axios)=>({
     listExams(schoolId){
         return axios.get(`/schools/${schoolId}/exams`)
     },
+    submitExam(schoolId, examId, data){
+        return axios.post(`/schools/${schoolId}/exams/${examId}/submits`, data)
+    },
     createExam(schoolId, data){
         return axios.post(`/schools/${schoolId}/exams`, data)
     },

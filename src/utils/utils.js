@@ -1,4 +1,5 @@
 import { read, utils, write, writeFile } from 'xlsx'
+import moment from 'moment';
 export default {
   setDataLs(key, value) {
     window.localStorage.setItem(key, JSON.stringify(value))
@@ -169,5 +170,9 @@ export default {
       // Write the workbook to an Excel file
       writeFile(workbook, `${this.generateFileName()}.xlsx`)
     }
+  },
+  getDateFormatYYMMDD(date) {
+    return moment(date).format('YYYY-MM-DD');
   }
 }
+

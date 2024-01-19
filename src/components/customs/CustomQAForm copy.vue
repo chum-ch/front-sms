@@ -1,21 +1,26 @@
 <template>
   <div class="grid mx-auto">
     <div class="add-qa col-2 mt-5">
-      <CustomButton @click="addQuestSection(defaultDataTypeAnswer)" :label="'Add QA Answer'" />
+      <CustomButton
+        @click="addQuestSection(defaultDataTypeAnswer)"
+        :label="'Add QA Answer'"
+      />
       <CustomButton
         @click="addQuestSection(defaultDataTypeCheckbox)"
         :label="'Add QA Checkbox'"
         class="my-4"
       />
-      <CustomButton @click="addQuestSection(defaultDataTypeOption)" :label="'Add QA Option'" />
+      <CustomButton
+        @click="addQuestSection(defaultDataTypeOption)"
+        :label="'Add QA Option'"
+      />
       <PrimeVueDivider />
       <CustomButton
         @click="submit"
         :label="'Save exam'"
         :warning="true"
-        :disabled="
-          schemaExam.Questions.length === 0 ||
-          schemaExam.ExamDate === '' ||
+        :disabled="schemaExam.Questions.length === 0 ||
+          schemaExam.ExamDate ==='' ||
           schemaExam.StartTime === '' ||
           schemaExam.EndTime === '' ||
           schemaExam.ExamTitle === ''
@@ -24,7 +29,7 @@
     </div>
     <div class="col-6 scroll-div py-0">
       <div class="qa">
-        <div class="sticky top-0 z-2 bg-white mt-2">
+        <div class=" sticky top-0 z-2 bg-white mt-2">
           <p class="m-0 fw-bolder fs-4">Question section</p>
           <CustomInputText
             :placeholder="'Exam title'"
@@ -35,14 +40,12 @@
           />
         </div>
         <div
-          class="my-2 all-question px-3 scroll-container"
+          class="my-2 all-question px-3"
           v-for="(itemQuestion, indexQuestion) in schemaExam.Questions"
           :key="indexQuestion"
           :id="indexQuestion"
-          ref="scrollTest"
         >
-          <div
-            class="all-checkbox card mx-auto p-2 my-4 border-2 border-round-md border-primary-500"
+          <div class="all-checkbox card mx-auto p-2 my-4 border-2 border-round-md border-primary-500"
           >
             <input
               type="text"
@@ -88,14 +91,14 @@
                   v-model="itemOption.Text"
                   :placeholder="'Answer'"
                   class="ml-2"
-                  ref="inputRefs"
+                  :ref="getRefName(indexQuestion, indexOption)"
                   :class="itemOption.IsCorrect ? 'focus' : 'custom-inpute-text'"
                   :disabled="itemOption.IsCorrect"
                   @keyup.enter="addQuestSection(itemQuestion, indexQuestion)"
                 />
               </div>
               <i
-                class="pi pi-trash text-red-500 mx-2 mt-1"
+                class="pi pi-trash text-danger mx-2"
                 @click="removeOption(indexQuestion, indexOption)"
                 v-show="itemOption.Hovered"
               ></i>
@@ -150,7 +153,7 @@
                 <small class="fw-bolder">Points</small>
               </div>
             </div>
-            <div class="text-right p-1 text-primary text-right">{{ indexQuestion + 1 }}</div>
+            <div class="text-right p-1 text-primary text-right"> {{ indexQuestion +1 }}</div>
           </div>
         </div>
       </div>
@@ -159,7 +162,7 @@
 
     <div v-show="true" class="col-4 scroll-div">
       <div class="sticky top-0 bg-white w-full bg-white">
-        <div class="sticky top-0 z-2 bg-white m-0">
+        <div class=" sticky top-0 z-2 bg-white m-0">
           <p class="m-0 fw-bolder fs-5">Summary</p>
           <div class="row">
             <CustomCalendar
@@ -210,9 +213,7 @@
       <ol class="m-0 px-7 text-sm">
         <li v-for="(itemLi, indexLi) in schemaExam.Questions" :key="indexLi">
           <div style="display: grid; grid-template-columns: 80% 20%">
-            <a :href="`#${indexLi}`" class="text-900 mb-1">
-              {{ itemLi.Text || itemLi.Placeholder }}</a
-            >
+            <a :href="`#${indexLi}`" class="text-900 mb-1"> {{ itemLi.Text || itemLi.Placeholder }}</a>
             <span class="ml-2 fw-bolder">({{ itemLi.Points || 0 }}pts)</span>
           </div>
         </li>
@@ -220,216 +221,215 @@
     </div>
   </div>
 </template>
-<script setup>
-import { reactive, ref, inject, provide, getCurrentInstance, watch, nextTick } from 'vue'
-
-import { useRouter } from 'vue-router'
-
-defineEmits([''])
-defineProps({})
-// Variable
-const instance = getCurrentInstance()
-const route = useRouter()
-const $api = inject('$api')
-const $globalFunction = inject('$globalFunction')
-const schoolId = route.currentRoute.value.params.schoolId
-const schoolBc = $globalFunction.getDataLs('schoolBc')
-const breadCrumb = ref([])
-if (!schoolBc) {
-  route.push('/')
-} else {
-  breadCrumb.value.push(
-    { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
-    { route: `/schools/${schoolId}/rooms`, label: 'Rooms' }
-  )
-}
-// Functions
-const totalPoint = ref(0)
-const checkBoxCorrectItem = ref([])
-const checkCorrectRadio = ref([])
-const inputRefs = ref('')
-const scrollTarget = ref(null)
-const scrollTest = ref()
-const style = {
-  backgroundColor: 'var( --primary-100)',
-  borderTop: 'none',
-  borderBottom: 'none',
-  borderLeft: '4px solid var( --primary-500)',
-  borderRight: 'none',
-  outline: 'none',
-  borderRadius: '4px'
-}
-
-const schemaExam = ref({
-  ExamDate: '',
-  StartTime: '',
-  EndTime: '',
-  ExamTitle: '',
-  Description: '',
-  Questions: []
-})
-// Error message
-const message = ref({})
-const getDefaultDataTypeAnswer = () => {
-  return {
-    Type: 'Answer',
-    Text: '',
-    Points: '',
-    Disabled: false,
-    UserAnswer: '',
-    Placeholder: 'Enter the question for long or short paragraph'
-  }
-}
-const getDefaultDataTypeCheckbox = () => {
-  return {
-    Type: 'Checkbox',
-    Text: '',
-    Points: '',
-    UserAnswer: [],
-    Placeholder: 'Enter the question for checkbox option',
-    Disabled: true,
-    Options: [
-      {
-        Text: '',
-        IsCorrect: false
+<script>
+import { nextTick } from "vue";
+export default {
+  components: {},
+  data() {
+    return {
+      schoolId: this.$route.params.schoolId,
+      totalPoint: 0,
+      checkBoxCorrectItem: [],
+      checkCorrectRadio: [],
+      style: {
+        backgroundColor: "var( --primary-100)",
+        borderTop: "none",
+        borderBottom: "none",
+        borderLeft: "4px solid var( --primary-500)",
+        borderRight: "none",
+        outline: "none",
+        borderRadius: "4px",
+      },
+      defaultDataTypeAnswer: this.getDefaultDataTypeAnswer(),
+      defaultDataTypeCheckbox: this.getDefaultDataTypeCheckbox(),
+      defaultDataTypeOption: this.getDefaultDataTypeOption(),
+      dataCheckBox: [], // Array to store checkbox values and v-model bindings
+      schemaExam: {
+        ExamDate: "",
+        StartTime: "",
+        EndTime: "",
+        ExamTitle: "",
+        Description: "",
+        Questions: [],
+      },
+      // Error message
+      message: {},
+    };
+  },
+  mounted() {
+    this.addQuestSection(this.defaultDataTypeCheckbox);
+    this.addQuestSection(this.defaultDataTypeOption);
+    this.getTotalQAndPoint();
+  },
+  watch: {
+    // values: {
+    //   immediate: true,
+    //   handler(data) {
+    //     this.values = data
+    //     console.log('da', data);
+    //   },
+    // },
+  },
+  methods: {
+    getDefaultDataTypeAnswer() {
+      return {
+        Type: "Answer",
+        Text: "",
+        Points: "",
+        Disabled: false,
+        UserAnswer: "",
+        Placeholder: "Enter the question for long or short paragraph",
+      };
+    },
+    getDefaultDataTypeCheckbox() {
+      return {
+        Type: "Checkbox",
+        Text: "",
+        Points: "",
+        UserAnswer: [],
+        Placeholder: "Enter the question for checkbox option",
+        Disabled: true,
+        Options: [
+          {
+            Text: "",
+            IsCorrect: false,
+          },
+        ],
+      };
+    },
+    getDefaultDataTypeOption() {
+      return {
+        Type: "Option",
+        Text: "",
+        Points: "",
+        UserAnswer: {},
+        Placeholder: "Enter question for option",
+        Disabled: true,
+        Options: [
+          {
+            Text: "",
+            IsCorrect: false,
+          },
+        ],
+      };
+    },
+    async submit() {
+      if (
+        this.schemaExam.Questions.length > 0 &&
+        this.schemaExam.Questions[0].Options[0].Text &&
+        this.schemaExam.ExamDate &&
+        this.schemaExam.StartTime &&
+        this.schemaExam.ExamTitle &&
+        this.schemaExam.EndTime
+      ) {
+      console.log('s', this.schemaExam)
+        await this.$api.exam.createExam(this.schoolId, this.schemaExam);
+        this.setDefaultValue();
+      } else {
+        if (!this.schemaExam.ExamDate) {
+          this.message.Date = "Date is required";
+        } else {
+          this.message.Date = "";
+        }
+        if (!this.schemaExam.StartTime) {
+          this.message.StartTime = "Start time is required";
+        } else {
+          this.message.StartTime = "";
+        }
+        if (!this.schemaExam.EndTime) {
+          this.message.EndTime = "End time is required";
+        } else {
+          this.message.EndTime = "";
+        }
       }
-    ]
-  }
-}
-const getDefaultDataTypeOption = () => {
-  return {
-    Type: 'Option',
-    Text: '',
-    Points: '',
-    UserAnswer: {},
-    Placeholder: 'Enter question for option',
-    Disabled: true,
-    Options: [
-      {
-        Text: '',
-        IsCorrect: false
+    },
+    getRefName(indexQuestion = "", indexOption) {
+      return `inputRefs_${indexQuestion}_${indexOption}`;
+    },
+    addQuestSection(data, indexQuestion = "") {
+      if (indexQuestion || indexQuestion === 0) {
+        this.schemaExam.Questions[indexQuestion].Options.push({
+          Text: "",
+          IsCorrect: false,
+        });
+        nextTick(() => {
+          const lastIndexOption =
+            this.schemaExam.Questions[indexQuestion].Options.length - 1;
+          const newOptionRef = this.$refs[
+            this.getRefName(indexQuestion, lastIndexOption)
+          ];
+          if (newOptionRef && newOptionRef[0]) {
+            newOptionRef[0].focus();
+            newOptionRef[0].setSelectionRange(
+              newOptionRef[0].value.length,
+              newOptionRef[0].value.length
+            );
+          }
+        });
+      } else {
+        this.schemaExam.Questions.push(data);
+        nextTick(() => {
+          this.$refs.scrollTarget.scrollIntoView({ 'scroll-behavior': "smooth", block: "end" });
+        });
       }
-    ]
-  }
-}
-const defaultDataTypeCheckbox = ref(getDefaultDataTypeCheckbox())
-const defaultDataTypeAnswer = ref(getDefaultDataTypeAnswer())
-const defaultDataTypeOption = ref(getDefaultDataTypeOption())
-const submit = async () => {
-  if (
-    schemaExam.value.Questions.length > 0 &&
-    schemaExam.value.ExamDate &&
-    schemaExam.value.StartTime &&
-    schemaExam.value.ExamTitle &&
-    schemaExam.value.EndTime
-  ) {
-    schemaExam.value.ExamDate = $globalFunction.getDateFormatYYMMDD(schemaExam.value.ExamDate)
-    const exam = await $api.exam.createExam(schoolId, schemaExam.value)
-    if (exam && exam.data) {
-      route.push(`/schools/${schoolId}/exams/${exam.data.EXAMS_ID}`)
-    }
-    setDefaultValue()
-  } else {
-    if (!schemaExam.value.ExamDate) {
-      message.value.Date = 'Date is required'
-    } else {
-      message.value.Date = ''
-    }
-    if (!schemaExam.value.StartTime) {
-      message.value.StartTime = 'Start time is required'
-    } else {
-      message.value.StartTime = ''
-    }
-    if (!schemaExam.value.EndTime) {
-      message.value.EndTime = 'End time is required'
-    } else {
-      message.value.EndTime = ''
-    }
-  }
-}
-const getRefName = (indexQuestion = '', indexOption) => {
-  inputRefs.value = `inputRefs_${indexQuestion}_${indexOption}`
-  return inputRefs.value
-}
-const addQuestSection = (data, indexQuestion = '') => {
-  if (indexQuestion || indexQuestion === 0) {
-    schemaExam.value.Questions[indexQuestion].Options.push({
-      Text: '',
-      IsCorrect: false
-    })
-    // nextTick(() => {
-    //   inputRefs.value.focus()
-    // })
-    // nextTick(() => {
-    //   const lastIndexOption = schemaExam.value.Questions[indexQuestion].Options.length - 1
-    //   getRefName(indexQuestion, lastIndexOption)
-    //   const newOptionRef = [inputRefs.value]
-    //   if (newOptionRef && newOptionRef[0]) {
-    //     newOptionRef[0].focus()
-    //     newOptionRef[0].setSelectionRange(
-    //       newOptionRef[0].value.length,
-    //       newOptionRef[0].value.length
-    //     )
-    //   }
-    // })
-  } else {
-    schemaExam.value.Questions.push(data)
-    scrollTest.value
-    nextTick(() => {
-      scrollTarget.value.scrollIntoView({ 'scroll-behavior': 'smooth', block: 'end' })
-    })
-  }
-  defaultDataTypeCheckbox.value = getDefaultDataTypeCheckbox()
-  defaultDataTypeAnswer.value = getDefaultDataTypeAnswer()
-  defaultDataTypeOption.value = getDefaultDataTypeOption()
-  getTotalQAndPoint()
-}
-const removeQuestion = (indexQuestion) => {
-  schemaExam.value.Questions.splice(indexQuestion, 1)
-  getTotalQAndPoint()
-}
-const removeOption = (indexQuestion, indexCheckBox) => {
-  schemaExam.value.Questions[indexQuestion].Options.splice(indexCheckBox, 1)
-  if (!schemaExam.value.Questions[indexQuestion].Options.some((item) => item.IsCorrect === true)) {
-    schemaExam.value.Questions[indexQuestion].Points = 0
-    getTotalQAndPoint()
-  }
-}
-const chooseAnswer = (indexQuestion) => {
-  schemaExam.value.Questions[indexQuestion].Disabled =
-    !schemaExam.value.Questions[indexQuestion].Disabled
-}
-const addCorrectAnswer = (indexQuestion, indexCheckBox) => {
-  const { Text } = schemaExam.value.Questions[indexQuestion].Options[indexCheckBox]
-  let itemExistCheckbox = checkBoxCorrectItem.value.some((item) => item.Text === Text)
-  schemaExam.value.Questions[indexQuestion].Options[indexCheckBox].IsCorrect = itemExistCheckbox
-  if (schemaExam.value.Questions[indexQuestion].Type === 'Option') {
-    for (let index = 0; index < schemaExam.value.Questions[indexQuestion].Options.length; index++) {
-      const element = schemaExam.value.Questions[indexQuestion].Options[index]
-      let valueExists = Object.values(checkCorrectRadio.value).includes(element.Text)
-      schemaExam.value.Questions[indexQuestion].Options[index].IsCorrect = valueExists
-    }
-  }
-}
-const getTotalQAndPoint = () => {
-  totalPoint.value = 0
-  for (let indexQuestion = 0; indexQuestion < schemaExam.value.Questions.length; indexQuestion++) {
-    const element = schemaExam.value.Questions[indexQuestion]
-    totalPoint.value += parseInt(element.Points || 0, 10)
-  }
-}
-const setDefaultValue = () => {
-  message.value = {}
-}
-// onMounted(() => {
-// })
-defineExpose({})
+      this.defaultDataTypeCheckbox = this.getDefaultDataTypeCheckbox();
+      this.defaultDataTypeAnswer = this.getDefaultDataTypeAnswer();
+      this.defaultDataTypeOption = this.getDefaultDataTypeOption();
+      this.getTotalQAndPoint();
+    },
+    removeQuestion(indexQuestion) {
+      this.schemaExam.Questions.splice(indexQuestion, 1);
+      this.getTotalQAndPoint();
+    },
+    removeOption(indexQuestion, indexCheckBox) {
+      this.schemaExam.Questions[indexQuestion].Options.splice(indexCheckBox, 1);
+      if(!this.schemaExam.Questions[indexQuestion].Options.some((item) => item.IsCorrect === true)) {
+        this.schemaExam.Questions[indexQuestion].Points = 0
+        this.getTotalQAndPoint();
+      }
+    },
+    chooseAnswer(indexQuestion) {
+      this.schemaExam.Questions[indexQuestion].Disabled = !this.schemaExam.Questions[
+        indexQuestion
+      ].Disabled;
+    },
+    addCorrectAnswer(indexQuestion, indexCheckBox) {
+      const { Text } = this.schemaExam.Questions[indexQuestion].Options[indexCheckBox];
+      let itemExistCheckbox = this.checkBoxCorrectItem.some((item) => item.Text === Text);
+      this.schemaExam.Questions[indexQuestion].Options[
+        indexCheckBox
+      ].IsCorrect = itemExistCheckbox;
+      if (this.schemaExam.Questions[indexQuestion].Type === "Option") {
+        for (
+          let index = 0;
+          index < this.schemaExam.Questions[indexQuestion].Options.length;
+          index++
+        ) {
+          const element = this.schemaExam.Questions[indexQuestion].Options[index];
+          let valueExists = Object.values(this.checkCorrectRadio).includes(element.Text);
+          this.schemaExam.Questions[indexQuestion].Options[index].IsCorrect = valueExists;
+        }
+      }
+    },
+    getTotalQAndPoint() {
+      this.totalPoint = 0;
+      for (
+        let indexQuestion = 0;
+        indexQuestion < this.schemaExam.Questions.length;
+        indexQuestion++
+      ) {
+        const element = this.schemaExam.Questions[indexQuestion];
+        this.totalPoint += parseInt(element.Points || 0, 10);
+      }
+    },
+    setDefaultValue() {
+      this.message = {};
+    },
+  },
+};
 </script>
 <style scoped>
-.scroll-container {
-  overflow-y: auto;
-}
-.grid {
+.grid{
   scroll-behavior: smooth;
 }
 

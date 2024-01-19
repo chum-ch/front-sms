@@ -7,7 +7,7 @@ const routes = [
     component: ExamList,
   },
   {
-    path: "/schools/:schoolId/exams/:generationId",
+    path: "/schools/:schoolId/exams/:examId",
     name: "exam-details",
     component: ExamDetails,
   },
