@@ -42,7 +42,6 @@
 </template>
 
 <script setup>
-import ExamDetails from './ExamDetails.vue'
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
 import { useRouter } from 'vue-router'
 onMounted(async () => {
@@ -78,24 +77,28 @@ const refToChildCustomDialogDeleteExam = ref()
 const columnsExam = ref([
   {
     field: 'ExamTitle',
-    header: 'Exam'
-  },
-  {
-    field: 'ExamDate',
-    header: 'Date'
-  },
-  {
-    field: 'StartTime',
-    header: 'Start time'
-  },
-  {
-    field: 'EndTime',
-    header: 'End time'
+    header: 'Exams'
   },
   {
     field: 'TotalQuestions',
-    header: 'Question'
-  }
+    header: 'Questions'
+  },
+  {
+    field: 'TotalPoints',
+    header: 'Points'
+  },
+  {
+    field: 'ExamDate',
+    header: 'Dates'
+  },
+  {
+    field: 'StartTime',
+    header: 'Start times'
+  },
+  {
+    field: 'EndTime',
+    header: 'End times'
+  },
 ])
 const isShowExamListComponent = ref(true)
 const dataTabs = [

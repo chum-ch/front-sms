@@ -2,66 +2,73 @@
   <div class="card mx-auto my-1 listQa text-justify py-3">
     <div>
       <h1 class="text-center">{{ examSections.ExamTitle }}</h1>
-      <PrimeVueDivider />
-      <h4>{{ examSections.Title }}</h4>
-      <div
-        class="qa my-3 card mx-auto"
-        v-for="(itemQa, indexQa) in examSections.Questions"
-        :key="indexQa"
-      >
-        <div class="desc point mb-3">
-          <span>
-            {{ itemQa.Text }}
-          </span>
-          <span class="float-end ml-1 sm">
-            <!-- <PrimeVueTag :value="`${itemQa.Points} Points`" severity="success" v-if="itemQa.Points"/> -->
-            <span v-if="itemQa.Points" class="text-green-500">({{ itemQa.Points }}pts)</span>
-          </span>
-        </div>
-        <div class="answer-type" v-if="itemQa.Type === 'Option'">
-          <CustomRadioButton
-            v-model="option"
-            :hideLabel="true"
-            @update:modelValue="addUserAnswer(examSections, 'Option', $event, indexQa)"
-            class="col-12 py-0"
-            :categories="
-              itemQa.Options.map((item) => {
-                if (item.Text !== '') {
-                  item.Value = item.Text
-                }
-                return item
-              })
-            "
-          />
-        </div>
-        <div class="answer-type" v-else-if="itemQa.Type === 'Checkbox'">
-          <CustomCheckBox
-            v-model="checkbox"
-            class="col-12 py-0"
-            @update:modelValue="addUserAnswer(examSections, 'Checkbox', $event, indexQa)"
-            :hideLabel="true"
-            :checkBoxCategories="
-              itemQa.Options.map((item) => {
-                item.Value = item.Text
-                return item
-              })
-            "
-          />
-        </div>
-        <div class="answer-type" v-else-if="itemQa.Type === 'Answer'">
-          <CustomTextArea
-            :placeholder="`${itemQa.Type.charAt(0).toUpperCase()}${itemQa.Type.slice(1)}`"
-            @update:modelValue="addUserAnswer(examSections, 'Answer', $event, indexQa)"
-            v-model="answer"
-          />
-        </div>
+      <div class="flex justify-content-between">
+        <p class="">Total questions: {{ examSections.TotalQuestions }}</p>
+        <p class="">Total points: {{ examSections.TotalPoints }}</p>
       </div>
+      <PrimeVueDivider class="p-0 m-0" />
+      <h4>{{ examSections.Title }}</h4>
+      <ol class="px-3">
+        <li
+          class="qa my-3 card mx-auto"
+          v-for="(itemQa, indexQa) in examSections.Questions"
+          :key="indexQa"
+        >
+          <div class="desc point mb-3">
+            <span>
+              {{ itemQa.Text }}
+            </span>
+            <span class="float-end ml-1 sm">
+              <!-- <PrimeVueTag :value="`${itemQa.Points} Points`" severity="success" v-if="itemQa.Points"/> -->
+              <span v-if="itemQa.Points" class="text-green-500">({{ itemQa.Points }}pts)</span>
+            </span>
+          </div>
+          <div class="answer-type" v-if="itemQa.Type === 'Option'">
+            <CustomRadioButton
+              v-model="option"
+              :hideLabel="true"
+              @update:modelValue="addUserAnswer(examSections, 'Option', $event, indexQa)"
+              class="col-12 p-0"
+              :categories="
+                itemQa.Options.map((item) => {
+                  if (item.Text !== '') {
+                    item.Value = item.Text
+                  }
+                  return item
+                })
+              "
+            />
+          </div>
+          <div class="answer-type" v-else-if="itemQa.Type === 'Checkbox'">
+            <CustomCheckBox
+              v-model="checkbox"
+              class="col-12 p-0"
+              @update:modelValue="addUserAnswer(examSections, 'Checkbox', $event, indexQa)"
+              :hideLabel="true"
+              :checkBoxCategories="
+                itemQa.Options.map((item) => {
+                  item.Value = item.Text
+                  return item
+                })
+              "
+            />
+          </div>
+          <div class="answer-type" v-else-if="itemQa.Type === 'Answer'">
+            <CustomTextArea
+              :placeholder="`${itemQa.Type.charAt(0).toUpperCase()}${itemQa.Type.slice(1)}`"
+              @update:modelValue="addUserAnswer(examSections, 'Answer', $event, indexQa)"
+              v-model="answer"
+            />
+          </div>
+        </li>
+      </ol>
     </div>
     <div class="submit">
       <CustomButton
         @onClick="submitAnswer(examSections)"
         class="float-end"
         :label="'Submit'"
+        :hide="hideSubmitBtn"
         :disabled="answer || Object.keys(option).length > 0 || checkbox.length > 0 ? false : true"
       />
     </div>
@@ -77,6 +84,10 @@ defineProps({
   examSections: {
     type: Object,
     required: true
+  },
+  hideSubmitBtn: {
+    type: Boolean,
+    default: () => true
   }
 })
 // Variable

@@ -12,7 +12,7 @@ import {
 import { useRouter } from 'vue-router'
 onMounted(() => {
   const defaultActive = props.dataTabs.find((item) => item.Active)
-  selectedComponent.value = defaultActive.Component
+  showNav(defaultActive.Component)
 })
 defineEmits(['update:modelValue', 'update:Component'])
 const props = defineProps({
@@ -39,6 +39,8 @@ const schoolId = route.currentRoute.value.params.schoolId
 const schoolBc = $globalFunction.getDataLs('schoolBc')
 const breadCrumb = ref([])
 const selectedComponent = shallowRef(null)
+const selectedTabData = ref(null)
+
 if (!schoolBc) {
   route.push('/')
 } else {
@@ -50,6 +52,8 @@ if (!schoolBc) {
 const showNav = (name) => {
   selectedComponent.value = name
   instance.emit('update:Component', name)
+  const selectedTab = props.dataTabs.find((tab) => tab.Component === name)
+  selectedTabData.value = selectedTab ? selectedTab.props : null
 }
 defineExpose({})
 </script>
@@ -78,7 +82,7 @@ defineExpose({})
       </ul>
     </nav>
     <PrimeVueDivider />
-    <component :is="selectedComponent" />
+    <component :is="selectedComponent" v-bind="selectedTabData" />
   </div>
 </template>
 
@@ -98,7 +102,7 @@ ul li {
 }
 li.active {
   border-bottom: 4px solid;
-  
+
   border-radius: 5px;
 }
 </style>

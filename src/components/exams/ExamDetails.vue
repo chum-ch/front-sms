@@ -1,13 +1,19 @@
 <template>
   <div class="">
     <NavigationView :breadCrumb="breadCrumb" />
-    <CustomQA :examSections="examSections" />
+    <CustomTab
+      :dataTabs="dataTabs"
+      class="pe-2"
+      :isFlex="true"
+      :justifyContent="'start'"
+    ></CustomTab>
   </div>
 </template>
 
 <script setup>
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import SendExam from './SendExam.vue'
 onMounted(async () => {
   await getExam(route.currentRoute.value.params.examId)
 })
@@ -27,23 +33,35 @@ const schoolId = route.currentRoute.value.params.schoolId
 const examId = route.currentRoute.value.params.examId
 const schoolBc = $globalFunction.getDataLs('schoolBc')
 const breadCrumb = ref([])
-const examName = ref('');
+const examName = ref('')
 if (!schoolBc) {
   route.push('/')
 } else {
   breadCrumb.value.push(
     { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
     { route: `/schools/${schoolId}/exams`, label: 'Exams' },
-    { route: `/schools/${schoolId}/exams/${examId}`, label: examName },
+    { route: `/schools/${schoolId}/exams/${examId}`, label: examName }
   )
 }
 // Functions
 const examSections = ref({})
+const dataTabs = [
+  {
+    Active: true,
+    TabName: 'Exam details',
+    Component: 'CustomQA',
+    props: {examSections},
+  },
+  {
+    TabName: 'Send exam',
+    Component: SendExam
+  }
+]
 const getExam = async (id) => {
   let exams = await $api.exam.getExam(schoolId, id)
   if (exams && exams.data) {
     examSections.value = exams.data
-    examName.value = exams.data.ExamTitle;
+    examName.value = exams.data.ExamTitle
   }
 }
 defineExpose({})
