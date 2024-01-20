@@ -13,23 +13,23 @@
         @click="submit"
         :label="'Save exam'"
         :warning="true"
-        :disabled="schemaExam.Questions.length > 0"
+        :disabled="
+          schemaExam.Questions.length === 0 ||
+          schemaExam.Questions.some((question) => question.Text === '') ||
+          schemaExam.ExamTitle === ''
+        "
       />
     </div>
     <div class="col-6 scroll-div py-0">
       <div class="qa">
         <div class="sticky top-0 z-2 bg-white">
-          <div class="listQa">
-            <p class="m-0 fw-bolder fs-4">Question section</p>
-            <PrimeVueDivider class="mb-2" />
-            <!-- <CustomInputText
-            :placeholder="'Exam title'"
+          <CustomInputText
+            :placeholder="'Exam title*'"
             class=""
             :hideLabel="true"
             v-model="schemaExam.ExamTitle"
             :messageError="message.Date"
-          /> -->
-          </div>
+          />
         </div>
         <div
           class="my-2 all-question px-3 scroll-container"
@@ -57,7 +57,7 @@
               @mouseover="itemOption.Hovered = true"
               @mouseleave="itemOption.Hovered = false"
             >
-              <div class="checkbox-qa flex w-100">
+              <div class="checkbox-qa flex w-11">
                 <PrimeVueCheckbox
                   v-model="checkBoxCorrectItem"
                   :inputId="itemOption.Text"
@@ -92,7 +92,7 @@
                 />
               </div>
               <i
-                class="pi pi-trash text-red-500 mx-2 mt-1"
+                class="pi pi-trash text-red-500 mx-2 mt-1 cursor-pointer"
                 @click="removeOption(indexQuestion, indexOption)"
                 v-show="itemOption.Hovered"
               ></i>
@@ -194,20 +194,20 @@
         </div> -->
         <div class="flex justify-content-between">
           <p class="m-0">
-            Total question:
+            Questions:
             <span class="fw-bolder">{{ schemaExam.Questions.length }}</span>
           </p>
           <p class="m-0">
-            Total points: <span class="fw-bolder">{{ totalPoint }}</span>
+            Points: <span class="fw-bolder">{{ totalPoint }}</span>
           </p>
         </div>
         <PrimeVueDivider class="mb-2" />
-        <p class="m-0 pb-3 fw-bolder">Question list</p>
+        <p class="m-0 pb-3 fw-bolder">List questions</p>
       </div>
-      <ol class="m-0 px-7 text-sm">
+      <ol class="m-0 px-3 text-sm">
         <li v-for="(itemLi, indexLi) in schemaExam.Questions" :key="indexLi">
           <div style="display: grid; grid-template-columns: 80% 20%">
-            <a :href="`#${indexLi}`" class="text-900 mb-1">
+            <a :href="`#${indexLi}`" class="text-900 mb-1 text-justify">
               {{ itemLi.Text || itemLi.Placeholder }}</a
             >
             <span class="ml-2 fw-bolder">({{ itemLi.Points || 0 }}pts)</span>
@@ -226,7 +226,11 @@
       @click="submit"
       :label="'Save exam'"
       :warning="true"
-      :disabled="schemaExam.Questions.length > 0"
+      :disabled="
+        schemaExam.Questions.length === 0 ||
+        schemaExam.Questions.some((question) => question.Text === '') ||
+        schemaExam.ExamDate === ''
+      "
       class="absolute bottom-0 left-0 m-2"
     />
     <PrimeVueSpeedDial
@@ -248,6 +252,8 @@ defineProps({})
 onMounted(() => {
   const { matches } = window.matchMedia('(max-width: 767px)') // Adjust the breakpoint as needed
   isMobile.value = matches
+  const checkbox = getDefaultDataTypeCheckbox()
+  addQuestSection(checkbox)
 })
 // Variable
 const instance = getCurrentInstance()
@@ -365,14 +371,8 @@ const defaultDataTypeCheckbox = ref(getDefaultDataTypeCheckbox())
 const defaultDataTypeAnswer = ref(getDefaultDataTypeAnswer())
 const defaultDataTypeOption = ref(getDefaultDataTypeOption())
 const submit = async () => {
-  if (
-    schemaExam.value.Questions.length > 0 &&
-    schemaExam.value.ExamDate &&
-    schemaExam.value.StartTime &&
-    schemaExam.value.ExamTitle &&
-    schemaExam.value.EndTime
-  ) {
-    schemaExam.value.ExamDate = $globalFunction.getDateFormatYYMMDD(schemaExam.value.ExamDate)
+  if (schemaExam.value.Questions.length > 0 && schemaExam.value.ExamTitle !== '') {
+    // schemaExam.value.ExamDate = $globalFunction.getDateFormatYYMMDD(schemaExam.value.ExamDate)
     const exam = await $api.exam.createExam(schoolId, schemaExam.value)
     if (exam && exam.data) {
       route.push(`/schools/${schoolId}/exams/${exam.data.EXAMS_ID}`)
