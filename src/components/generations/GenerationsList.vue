@@ -39,11 +39,19 @@ const tableDataGenerations = ref([])
 const columnsGeneration = ref([
   {
     field: 'Name',
-    header: 'Generation'
+    header: 'Generations'
   },
   {
     field: 'StudentNumber',
-    header: 'Number of student'
+    header: 'Number of students'
+  },
+  {
+    field: 'MaleTotals',
+    header: 'Male students'
+  },
+  {
+    field: 'FemaleTotals',
+    header: 'Female students'
   }
 ])
 const onClickCreateGeneration = () => {
@@ -65,9 +73,9 @@ const selectedRowData = (data) => {
 }
 const getListGenerations = async () => {
   try {
-    let generations = await $api.generation.listGenerations(schoolId)
-    if (generations && generations.data && generations.data.length > 0) {
-      tableDataGenerations.value = generations.data
+    let { data } = await $api.generation.listGenerations(schoolId)
+    if (data && data.length > 0) {
+      tableDataGenerations.value = data
     } else {
       tableDataGenerations.value = []
     }
