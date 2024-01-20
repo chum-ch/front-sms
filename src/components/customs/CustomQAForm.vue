@@ -394,10 +394,6 @@ const submit = async () => {
     }
   }
 }
-// const getRefName = (indexQuestion = '', indexOption) => {
-//   inputRefs.value = `inputRefs_${indexQuestion}_${indexOption}`
-//   return inputRefs.value
-// }
 const addQuestSection = (data, indexQuestion = '') => {
   if (indexQuestion || indexQuestion === 0) {
     schemaExam.value.Questions[indexQuestion].Options.push({
@@ -456,8 +452,6 @@ const getTotalQAndPoint = () => {
 const setDefaultValue = () => {
   message.value = {}
 }
-// onMounted(() => {
-// })
 defineExpose({})
 </script>
 <style scoped>
