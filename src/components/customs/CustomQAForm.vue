@@ -13,7 +13,7 @@
         @click="submit"
         :label="'Save exam'"
         :warning="true"
-        :disabled="schemaExam.Questions.length === 0"
+        :disabled="schemaExam.Questions.length > 0"
       />
     </div>
     <div class="col-6 scroll-div py-0">
@@ -214,7 +214,7 @@
       </ol>
     </div>
   </div>
-  <div v-if="isMobile">
+  <div v-if="isMobile" class="" style="">
     <!-- ||
         schemaExam.ExamDate === '' ||
         schemaExam.StartTime === '' ||
@@ -224,8 +224,8 @@
       @click="submit"
       :label="'Save exam'"
       :warning="true"
-      :disabled="schemaExam.Questions.length === 0"
-      class="absolute bottom-0 left-0 m-3"
+      :disabled="schemaExam.Questions.length > 0"
+      class="absolute bottom-0 left-0 m-2"
     />
     <PrimeVueSpeedDial
       :model="itemTest"
@@ -233,7 +233,7 @@
       type="quarter-circle"
       direction="up-left"
       :style="{ right: 0, bottom: 0 }"
-      class="m-3"
+      class="m-2 p-0"
     />
   </div>
 </template>
@@ -498,7 +498,7 @@ input {
   outline: none;
 }
 .scroll-div {
-  height: 88vh;
+  height: 65vh;
   overflow: scroll;
   /* Add scrollbar to the div when its height exceded 150px*/
   /* Can be used horizanlty or vertically according to your layout*/
