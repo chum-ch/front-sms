@@ -19,15 +19,17 @@
     <div class="col-6 scroll-div py-0">
       <div class="qa">
         <div class="sticky top-0 z-2 bg-white">
-          <p class="m-0 fw-bolder fs-4">Question section</p>
-          <PrimeVueDivider class="mb-2" />
-          <!-- <CustomInputText
+          <div class="listQa">
+            <p class="m-0 fw-bolder fs-4">Question section</p>
+            <PrimeVueDivider class="mb-2" />
+            <!-- <CustomInputText
             :placeholder="'Exam title'"
             class=""
             :hideLabel="true"
             v-model="schemaExam.ExamTitle"
             :messageError="message.Date"
           /> -->
+          </div>
         </div>
         <div
           class="my-2 all-question px-3 scroll-container"
@@ -502,6 +504,9 @@ input {
     /* display: block; */
     padding: 0;
     width: 100%;
+  }
+  .listQa {
+    display: none;
   }
   .hidden {
     display: flex;
