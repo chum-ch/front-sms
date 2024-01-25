@@ -33,7 +33,6 @@ import FileUpload from 'primevue/fileupload';
 import Menubar from 'primevue/menubar';
 import TieredMenu from 'primevue/tieredmenu';
 import SpeedDial from 'primevue/speeddial';
-// Custom component
 
 // Custom component
 import NavigationView from './views/NavigationView.vue'
@@ -61,6 +60,7 @@ import CustomColumnDownload from './components/customs/CustomColumnDownload.vue'
 import CustomProgressBar from './components/customs/CustomProgressBar.vue';
 import CustomUploadFile from './components/customs/CustomUploadFile.vue';
 import CustomTieredMenu from './components/customs/CustomTieredMenu.vue';
+import CustomVoiceSearch from './components/customs/CustomVoiceSearch.vue';
 
 const app = createApp(App)
 app.directive('tooltip', Tooltip);
@@ -116,6 +116,7 @@ app.component('CustomColumnDownload', CustomColumnDownload);
 app.component('CustomProgressBar', CustomProgressBar);
 app.component('CustomUploadFile', CustomUploadFile);
 app.component('CustomTieredMenu', CustomTieredMenu);
+app.component('CustomVoiceSearch', CustomVoiceSearch);
 app.use(router)
 app.use(PrimeVue)
 app.provide('$api', $api)

@@ -143,20 +143,23 @@ const initFilters = () => {
   }
 }
 // Watcher function
-watch(() => props.tableData, (data) => {
-  for (const obj of menuItems.value) {
-    obj.items.forEach(item => {
-      const hasPropertyDisabled = Object.prototype.hasOwnProperty.call(item, 'disabled')
-      if (hasPropertyDisabled) {
-        item.disabled = true
-        if (data.length > 0) {
-          item.disabled = false
+watch(
+  () => props.tableData,
+  (data) => {
+    for (const obj of menuItems.value) {
+      obj.items.forEach((item) => {
+        const hasPropertyDisabled = Object.prototype.hasOwnProperty.call(item, 'disabled')
+        if (hasPropertyDisabled) {
+          item.disabled = true
+          if (data.length > 0) {
+            item.disabled = false
+          }
         }
-      }
-      return item
-    });
+        return item
+      })
+    }
   }
-});
+)
 initFilters()
 defineExpose({
   unSelectedAllRows
@@ -166,14 +169,23 @@ defineExpose({
 <template>
   <div class="table mt-2">
     <div class="flex justify-content-between sm:flex-row-reverse flex-wrap mx-2">
-      <CustomInputText
-        v-model="filters['global'].value"
-        placeholder="Search ..."
-        :showIcon="true"
-        :leftIcon="true"
-        :searchIcon="true"
-        class="search"
-      />
+      <div class="flex">
+        <CustomInputText
+          v-model="filters['global'].value"
+          placeholder="Search ..."
+          :showIcon="true"
+          :leftIcon="true"
+          :searchIcon="true"
+          class="search"
+        />
+        <div class="flex flex-wrap justify-content-center m-2">
+          <div
+            class="border-circle w-2rem h-2rem bg-primary-400 cursor-pointer text-white font-bold flex align-items-center justify-content-center"
+          >
+            <i class="pi pi-microphone" />
+          </div>
+        </div>
+      </div>
       <div class="flex flex-wrap">
         <CustomButton
           :label="'Add'"
@@ -243,7 +255,9 @@ defineExpose({
 </template>
 <style>
 @media (max-width: 600px) {
-  .p-paginator-bottom .p-dropdown, .p-paginator-first, .p-paginator-last {
+  .p-paginator-bottom .p-dropdown,
+  .p-paginator-first,
+  .p-paginator-last {
     display: none;
   }
   .flex {

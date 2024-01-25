@@ -20,7 +20,7 @@
           "
         />
         <InputText
-          :class="[required && messageError !== '' ? pInvalid : '']"
+          :class="[required || messageError !== '' ? pInvalid : '']"
           :style="style"
           :placeholder="placeholder"
           v-model="values"
@@ -38,90 +38,67 @@
         @update:modelValue="updateModelValue"
       />
     </div>
-    <small
-      v-if="messageError !== ''"
-      class="flex text-red-500"
-    >
+    <small v-if="messageError !== '' && showError" class="flex text-red-500">
       {{ messageError }}
       <i :class="messageError ? 'pi pi-info-circle' : ''" style="margin: 2px" />
     </small>
   </div>
 </template>
-<script>
+<script setup>
 import InputText from "primevue/inputtext";
-export default {
-  name: "styleCustomInputText",
-  components: {
-    InputText,
-  },
-  data() {
-    return {
-      values: "",
-      pInvalid: "",
-    };
-  },
-  updated() {
-    if (this.modelValue) {
-      this.values = this.modelValue;
-    } else {
-      this.values = "";
-    }
-  },
-  created() {
-    this.updateModelValue(this.modelValue);
-  },
-  props: {
-    msg: String,
-    placeholder: String,
-    required: Boolean,
-    label: String,
-    messageError: String,
-    userIcon: Boolean,
-    searchIcon: Boolean,
-    spinnerIcon: Boolean,
-    emailIcon: Boolean,
-    showIcon: Boolean,
-    rightIcon: Boolean,
-    isDisabled: Boolean,
-    border: String,
-    style: Object,
-    styleCustomInput: Boolean,
-    hideLabel: Boolean,
-    // value: String,
-    modelValue: [String, Number, Object],
-  },
-  emits: ["update:modelValue"],
-  watch: {
-    // values: {
-    //   immediate: true,
-    //   handler(data) {
-    //     this.values = data
-    //     console.log('da', data);
-    //   },
-    // },
-    messageError: {
-      immediate: true,
-      handler(data) {
-        if (data) {
-          this.pInvalid = "p-invalid";
-        }
-      },
-    },
-  },
-  methods: {
-    // setDefaultValue(){
-    //   this.values = ""
-    // },
-    updateModelValue(value) {
-      this.values = value;
-      this.$emit("update:modelValue", this.values);
-      if (this.values) {
-        this.pInvalid = '';
-      }
-      // console.log("value text input", value);
-    },
-  },
+import {
+  onMounted,
+  reactive,
+  ref,
+  inject,
+  provide,
+  getCurrentInstance,
+  watch,
+} from "vue";
+onMounted(() => {});
+defineEmits(["update:modelValue"]);
+const props = defineProps({
+  placeholder: String,
+  required: Boolean,
+  label: String,
+  messageError: String,
+  userIcon: Boolean,
+  searchIcon: Boolean,
+  spinnerIcon: Boolean,
+  emailIcon: Boolean,
+  showIcon: Boolean,
+  rightIcon: Boolean,
+  isDisabled: Boolean,
+  border: String,
+  style: Object,
+  styleCustomInput: Boolean,
+  hideLabel: Boolean,
+  modelValue: String
+});
+const instance = getCurrentInstance();
+const values = ref("");
+const pInvalid = ref("");
+const showError = ref(true);
+const updateModelValue = (value) => {
+  pInvalid.value = "";
+  showError.value = false;
+  if (!value && props.messageError && props.required) {
+    pInvalid.value = "p-invalid";
+    showError.value = true;
+  }
+  instance.emit("update:modelValue", value);
 };
+watch([() => props.messageError, () => props.modelValue], ([newPropMessageError, newPropModelValue]) => {
+  if (newPropMessageError && !values.value ) {
+    pInvalid.value = "p-invalid";
+    showError.value = true;
+  }
+  if (newPropModelValue) {
+    values.value = newPropModelValue;
+  }
+})
+
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

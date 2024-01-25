@@ -34,7 +34,7 @@ onMounted(() => {
           openDialogMessage()
           setTimeout(() => {
             closeDialogMessage()
-          }, 10000) // Delay of 8000 milliseconds (5 seconds) before clearing progress
+          }, 10000) // Delay of 10000 milliseconds (10 seconds) before clearing progress
         }
         isLoading.value = false
         return Promise.reject(error)
@@ -66,7 +66,7 @@ const closeDialogMessage = () => {
         <RouterLink to="/about">About</RouterLink>
       </nav>
     </div> -->
-  </header>
+      </header>
   <CustomDialog
     ref="dialogMessage"
     :modalHeader="'Error message'"
@@ -96,7 +96,7 @@ const closeDialogMessage = () => {
       </div>
     </div>
   </div>
-  <RouterView />
+    <RouterView />
 </template>
 
 <style scoped></style>

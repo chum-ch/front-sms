@@ -4,6 +4,6 @@ import DashBoard from '../components/DashBoard.vue'
 
 <template>
   <main>
-    <DashBoard />
+        <DashBoard />
   </main>
 </template>
