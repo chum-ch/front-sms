@@ -115,3 +115,4 @@ export default {
   animation-timing-function: cubic-bezier(0.5, 2.4, 0.9, 0.9);
 }
 </style>
+

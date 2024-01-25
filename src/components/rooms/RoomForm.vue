@@ -42,6 +42,7 @@ const onlyUpdateRoom = (data = {}) => {
   if (data && Object.keys(data).length > 0) {
     roomForm.value.Name = data.Name
     roomForm.value.Floor = data.Floor
+    console.log('abc', roomForm.value);
     // Get roomID
     roomID.value = data.ROOMS_ID
     if (roomID.value) {

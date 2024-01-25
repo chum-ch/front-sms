@@ -76,7 +76,7 @@ const props = defineProps({
   modelValue: String
 });
 const instance = getCurrentInstance();
-const values = ref("");
+const values = ref(props.modelValue);
 const pInvalid = ref("");
 const showError = ref(true);
 const updateModelValue = (value) => {

@@ -98,11 +98,6 @@ const createTrainerInfo = async () => {
     console.log('Error create trainer info', error)
   }
 }
-const updateInput = (value) => {
-  if (value) {
-    message.value = {}
-  }
-}
 const setDefaultValue = () => {
   trainerForm.value = {}
   message.value = {}
@@ -132,7 +127,6 @@ defineExpose({ openDialogTrainerForm, onlyUpdateTrainer })
               :placeholder="'......'"
               :label="'Last name'"
               :required="true"
-              @update:modelValue="updateInput"
               v-model="trainerForm.LastName"
               :messageError="message.LastName"
               class="w-full"
@@ -143,7 +137,7 @@ defineExpose({ openDialogTrainerForm, onlyUpdateTrainer })
               :placeholder="'......'"
               :label="'First name'"
               :required="true"
-              @update:modelValue="updateInput"
+              
               v-model="trainerForm.FirstName"
               :messageError="message.FirstName"
               class="w-full"

@@ -17,7 +17,7 @@
         class=""
         :class="required && messageError !== '' ? p_invalid : ''"
       />
-      <small v-if="messageError !== ''" class="flex text-red-500">
+      <small v-if="messageError !== '' && showError" class="flex text-red-500">
         {{ messageError }}
         <i :class="messageError ? 'pi pi-info-circle' : ''" style="margin: 2px" />
       </small>
@@ -37,6 +37,7 @@ export default {
       values: "",
       p_invalid: '',
       // messageError: this.messageError,
+      showError: true,
       decimalDigit: null,
     };
   },
@@ -58,6 +59,7 @@ export default {
       handler(data) {
         if (data) {
           this.p_invalid = "p-invalid";
+          this.showError = true
         }
       },
     },
@@ -67,7 +69,15 @@ export default {
     this.getValue();
   },
   methods: {
-    getValue(){
+    getValue(data){
+      this.showError = true
+      this.p_invalid = "p-invalid";
+      this.values = null
+      if (data && data.value) {
+        this.showError = false
+        this.p_invalid = "";
+        this.values = data.value
+      }
       if(this.isDecimal) {
         this.decimalDigit = 2;
       }
@@ -75,6 +85,9 @@ export default {
     updateModelValue(value) {
       this.values = value;
       this.$emit("update:modelValue", this.values);
+      this.showError = false
+      this.p_invalid = "";
+
     },
   },
 };

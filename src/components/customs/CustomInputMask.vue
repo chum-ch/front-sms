@@ -13,7 +13,7 @@
         :placeholder="placeholder"
         @update:modelValue="updateModelValue"
       />
-      <small v-if="message_errors !== ''" class="flex text-red-500">
+      <small v-if="message_errors !== '' && show_error" class="flex text-red-500">
         {{ message_errors }}
         <i :class="message_errors ? 'pi pi-info-circle' : ''" style="margin: 2px" />
       </small>
@@ -32,7 +32,8 @@ export default {
     return {
       values: "",
       message_errors: this.message_error,
-      p_invalid: ''
+      p_invalid: "",
+      show_error: true,
     };
   },
   props: {
@@ -50,15 +51,15 @@ export default {
       immediate: true,
       handler(data) {
         if (data) {
-          let splitTime = data.split(":");
-          if (splitTime[0] !== "_" && parseInt(splitTime[0], 10) > 24) {
+          let [hh, mm] = data.split(":");
+          if (hh !== "_" && parseInt(hh, 10) > 24) {
             this.$emit("isNotMatch", true);
             this.message_errors = "Hour is wrong format.";
-          } else if (splitTime[1] !== "_" && parseInt(splitTime[1], 10) > 59) {
-            this.$emit("isNotMatch", true);
-            this.message_errors = "Minute is wrong format.";
-          } else {
-            this.message_errors = "";
+             this.showErrorSms()
+            } else if (mm !== "_" && parseInt(mm, 10) > 59) {
+              this.$emit("isNotMatch", true);
+              this.message_errors = "Minute is wrong format.";
+              this.showErrorSms()
           }
         }
         if (data && data.includes("_")) {
@@ -73,8 +74,8 @@ export default {
       immediate: true,
       handler(data) {
         if (data) {
-          this.p_invalid = "p-invalid";
           this.message_errors = data;
+          this.showErrorSms()
         }
       },
     },
@@ -83,10 +84,15 @@ export default {
     this.updateModelValue(this.modelValue)
   },
   methods: {
+    showErrorSms(){
+      this.show_error = true
+      this.p_invalid = "p-invalid"
+    },
     updateModelValue(value) {
       this.values = value;
       this.$emit("update:modelValue", this.values);
-      // console.log("value text input", value);
+      this.show_error = false
+      this.p_invalid = ""
     },
   },
 };
