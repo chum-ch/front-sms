@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
 import { useRouter } from 'vue-router'
 onMounted(() => {})
-defineEmits([''])
+defineEmits(['update:voiceInput'])
 defineProps({
   listening: {
     type: String,
@@ -12,8 +12,6 @@ defineProps({
 // Variable
 const instance = getCurrentInstance()
 const route = useRouter()
-const $api = inject('$api')
-const $globalFunction = inject('$globalFunction')
 // Functions
 const data = [
   { Name: 'chum', age: 11 },
@@ -40,6 +38,7 @@ function handleVoiceSearch(duration) {
   recognition.onresult = function (event) {
     const voiceInput = event.results[0][0].transcript.trim() // Get the transcribed voice input
     searchInput.value = voiceInput // Set the input field value
+    instance.emit('update:voiceInput', voiceInput)
     // Perform the search by calling the searchByName function
     const searchResults = searchByName(voiceInput)
 
@@ -84,7 +83,7 @@ defineExpose({
       <template #bodyDialog>
         <div class="load-wrapp">
           <div class="load-3 flex">
-            <p class="mr-2">{{ listening??'Listening' }}</p>
+            <p class="mr-2 text-sm">{{ listening??'Listening' }}</p>
             <div class="mt-4 line"></div>
             <div class="mt-4 line"></div>
             <div class="mt-4 line"></div>
@@ -97,7 +96,7 @@ defineExpose({
     </CustomDialog>
 
     <div>
-      <input type="text" v-model="searchInput" placeholder="Search by name" />
+      <!-- <input type="text" v-model="searchInput" placeholder="Search by name" /> -->
     </div>
   </div>
 </template>
@@ -168,8 +167,8 @@ body {
 
 .line {
   display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   margin-right: 4px;
   border-radius: 15px;
   background-color: var(--primary-color);

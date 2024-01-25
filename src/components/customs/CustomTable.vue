@@ -56,6 +56,8 @@ onMounted(() => {
 const selection = ref([])
 const globalFilterFields = ref([])
 const filters = ref()
+const toChildCustomVoiceSearch = ref()
+
 // Button
 const disabledDelete = ref(true)
 const disabledEdit = ref(true)
@@ -142,6 +144,14 @@ const initFilters = () => {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
   }
 }
+const getTextFromVoice = (text) => {
+  filters.value = {
+    global: { value: text, matchMode: FilterMatchMode.CONTAINS },
+  };
+};
+const openDialogVoice = () => {
+  toChildCustomVoiceSearch.value.openDialogVoice();
+};
 // Watcher function
 watch(
   () => props.tableData,
@@ -180,9 +190,15 @@ defineExpose({
         />
         <div class="flex flex-wrap justify-content-center m-2">
           <div
-            class="border-circle w-2rem h-2rem bg-primary-400 cursor-pointer text-white font-bold flex align-items-center justify-content-center"
+            @click="openDialogVoice"
+            class="border-circle w-2rem h-2rem bg-primary cursor-pointer text-white font-bold flex align-items-center justify-content-center"
           >
             <i class="pi pi-microphone" />
+            <CustomVoiceSearch
+              ref="toChildCustomVoiceSearch"
+              @update:voiceInput="getTextFromVoice"
+              :listening="'Listening'"
+            />
           </div>
         </div>
       </div>
