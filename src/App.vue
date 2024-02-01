@@ -99,4 +99,9 @@ const closeDialogMessage = () => {
     <RouterView />
 </template>
 
-<style scoped></style>
+<style>
+.p-speeddial-action {
+  background:var(--primary-color);
+  text-decoration: none;
+}
+</style>
