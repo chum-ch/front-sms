@@ -127,9 +127,15 @@ defineExpose({})
   padding: 0 2.5rem;
 }
 @media (max-width: 885px) {
-  /* Styles applied for viewport width up to 767px */
+  /* Tablet */
   .listQa {
-    width: 90%;
+    width: 95%;
+  }
+}
+@media (max-width: 600px) {
+  /* Smartphone */
+  .listQa {
+    padding: 0px 10px;
   }
 }
 </style>
