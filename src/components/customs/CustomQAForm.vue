@@ -216,7 +216,7 @@
       </ol>
     </div>
   </div>
-  <div v-if="isMobile" class="" style="">
+  <div v-if="isMobile && false" class="" style="">
     <!-- ||
         schemaExam.ExamDate === '' ||
         schemaExam.StartTime === '' ||
@@ -242,6 +242,14 @@
       class="m-2 p-0"
     />
   </div>
+  <!-- <footer class="">
+    <div class="mobile-nav">
+      <i class="pi pi-circle-fill">a</i>
+      <div class="">b</div>
+      <div class="">c</div>
+      <div class="">d</div>
+    </div>
+  </footer> -->
 </template>
 <script setup>
 import { reactive, onMounted, ref, inject, provide, getCurrentInstance, watch, nextTick } from 'vue'
@@ -492,6 +500,20 @@ input {
 }
 .focus:focus {
   outline: none;
+}
+footer {
+  position: relative;
+}
+.mobile-nav {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  z-index: 999;
+  width: 100%;
+  padding: 20px;
+  margin-left: -8px;
+  bottom: 0;
+  color:var(--primary-500);
 }
 .scroll-div {
   height: 65vh;

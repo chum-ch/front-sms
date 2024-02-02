@@ -138,15 +138,17 @@ export default defineComponent({
 .fc-event-time {
   display: none;
 }
-
+@media (max-width: 885px) {
+  /* Tablet */
+  .fc .fc-toolbar-title {
+    font-size: 15px;
+  }
+}
 @media (max-width: 500px) {
   .fc .fc-dayGridMonth-button,
   .fc .fc-multiMonthYear-button,
   .fc .fc-timeGridWeek-button {
     display: none;
-  }
-  .fc .fc-toolbar-title {
-    font-size: 15px;
   }
   tr a {
     font-size: 12px;

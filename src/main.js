@@ -33,6 +33,8 @@ import FileUpload from 'primevue/fileupload';
 import Menubar from 'primevue/menubar';
 import TieredMenu from 'primevue/tieredmenu';
 import SpeedDial from 'primevue/speeddial';
+import Fieldset from 'primevue/fieldset';
+import Avatar from 'primevue/avatar';
 
 // Custom component
 import NavigationView from './views/NavigationView.vue'
@@ -61,6 +63,7 @@ import CustomProgressBar from './components/customs/CustomProgressBar.vue';
 import CustomUploadFile from './components/customs/CustomUploadFile.vue';
 import CustomTieredMenu from './components/customs/CustomTieredMenu.vue';
 import CustomVoiceSearch from './components/customs/CustomVoiceSearch.vue';
+import CustomFieldset from './components/customs/CustomFieldset.vue';
 
 const app = createApp(App)
 app.directive('tooltip', Tooltip);
@@ -88,6 +91,8 @@ app.component('PrimeVueFileUpload', FileUpload);
 app.component('PrimeVueMenubar', Menubar);
 app.component('PrimeVueTieredMenu', TieredMenu);
 app.component('PrimeVueSpeedDial', SpeedDial);
+app.component('PrimeVueFieldset', Fieldset);
+app.component('PrimeVueAvatar', Avatar);
 
 
 // Custom
@@ -117,6 +122,7 @@ app.component('CustomProgressBar', CustomProgressBar);
 app.component('CustomUploadFile', CustomUploadFile);
 app.component('CustomTieredMenu', CustomTieredMenu);
 app.component('CustomVoiceSearch', CustomVoiceSearch);
+app.component('CustomFieldset', CustomFieldset);
 app.use(router)
 app.use(PrimeVue)
 app.provide('$api', $api)

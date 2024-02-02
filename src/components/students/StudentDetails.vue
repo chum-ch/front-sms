@@ -1,9 +1,18 @@
 <script setup>
 // import StudentsList from "./StudentsList.vue";
-import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch, shallowRef } from 'vue'
+import {
+  onMounted,
+  reactive,
+  ref,
+  inject,
+  provide,
+  getCurrentInstance,
+  watch,
+  shallowRef
+} from 'vue'
 import { useRouter } from 'vue-router'
 import StudentForm from './StudentForm.vue'
-onMounted(() => {})
+import Overview from './Overview.vue'
 defineEmits([''])
 defineProps({
   msg: {
@@ -51,7 +60,7 @@ const myImage = ref('')
 const itemsViewInfo = ref([
   {
     label: 'Gender',
-    path: 'Gender'
+    path: 'Gender.Value'
   },
   {
     label: 'Province',
@@ -78,16 +87,17 @@ const itemsViewInfo = ref([
 const dataTabs = [
   {
     TabName: 'Overview',
-    Component: 'null',
+    Component: Overview,
+    props: { avatarName: fullName },
+    Active: true,
   },
   {
-    Active: true,
     TabName: 'Schedule',
-    Component: 'CustomFullCalendar',
+    Component: 'CustomFullCalendar'
   }
 ]
 const changProfile = () => {
-  refToChildCropImg.openDialogCropImg()
+  refToChildCropImg.value.openDialogCropImg()
 }
 const handleSubmit = async (imageFile) => {
   const formData = new FormData()
@@ -95,11 +105,11 @@ const handleSubmit = async (imageFile) => {
   const uploadImage = await $api.student.uploadImage(studentId, formData)
   ProfileURL.value = uploadImage.data.ProfileURL
 }
-const getSchoolDetails = async (schoolId) => {
-  let school = await $api.school.getSchool(schoolId)
-  if (school && school.data && Object.keys(school.data).length > 0) {
-    school = school.data
-  }
+const getStudentDetails = async () => {
+  // let school = await $api.school.getSchool(schoolId)
+  // if (school && school.data && Object.keys(school.data).length > 0) {
+  //   school = school.data
+  // }
   let generation = await $api.generation.getGeneration(schoolId, generationId)
   if (generation && generation.data && Object.keys(generation.data).length > 0) {
     generation = generation.data
@@ -108,20 +118,22 @@ const getSchoolDetails = async (schoolId) => {
   if (student && student.data && Object.keys(student.data).length > 0) {
     student = { ...student.data, GenerationName: generation.Name }
     ProfileURL.value = student.ProfileURL
-    itemsViewInfo.value = $globalFunction.getValueNestedObject(itemsViewInfo, student)
+    itemsViewInfo.value = $globalFunction.getValueNestedObject(itemsViewInfo.value, student)
   }
 }
 defineExpose({})
+onMounted( async() => {
+  getStudentDetails()
+})
 </script>
 
 <template>
   <div class="overflow-hidden h-screen">
     <NavigationView :breadCrumb="breadCrumb" />
-    <div class="gap-2 p-2" style="display: grid; grid-template-columns: 30% 70%">
-      <CustomPeopleProfile
-        :fullName="fullName"
-        :email="email"
-        :ProfileURL="ProfileURL"
+    
+    <div class="grid nested-grid h-full">
+      <CustomPeopleProfile :fullName="fullName" :email="email" :ProfileURL="ProfileURL"
+      class="xl:col-3 md:col-4 peopleProfile"
       >
         <!-- @onClick="changProfile" -->
         <template #view_info>
@@ -134,8 +146,7 @@ defineExpose({})
           </CustomViewInfo>
         </template>
       </CustomPeopleProfile>
-      <CustomTab :dataTabs="dataTabs" class="pe-2" :isFlex="true">
-      </CustomTab>
+      <CustomTab :dataTabs="dataTabs" class="col-12 md:col-8 xl:col-9" :isFlex="true"> </CustomTab>
     </div>
     <CustomCropImg ref="refToChildCropImg" @image="handleSubmit" />
   </div>
@@ -143,4 +154,10 @@ defineExpose({})
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+@media (max-width: 600px) {
+  .peopleProfile {
+    display: none;
+  }
+  
+}
 </style>

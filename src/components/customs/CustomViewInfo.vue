@@ -1,7 +1,7 @@
 <template>
-    <div class="flex justify-content-between mb-2 ">
+    <div class="flex justify-content-between my-2">
       <p>{{ label }}</p>
-      <h6 class="fw-bold" >{{ value }}</h6>
+      <h5 class="fw-bold" >{{ value }}</h5>
     </div>
 </template>
 <script>
