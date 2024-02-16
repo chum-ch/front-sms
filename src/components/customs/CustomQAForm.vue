@@ -57,7 +57,7 @@
               @mouseover="itemOption.Hovered = true"
               @mouseleave="itemOption.Hovered = false"
             >
-              <div class="checkbox-qa flex w-11">
+              <div class="checkbox-qa flex w-12">
                 <PrimeVueCheckbox
                   v-model="checkBoxCorrectItem"
                   :inputId="itemOption.Text"
@@ -216,7 +216,7 @@
       </ol>
     </div>
   </div>
-  <div v-if="isMobile && false" class="" style="">
+  <div v-if="isMobile && true" class="" style="">
     <!-- ||
         schemaExam.ExamDate === '' ||
         schemaExam.StartTime === '' ||
