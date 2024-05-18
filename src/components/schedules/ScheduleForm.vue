@@ -77,6 +77,8 @@ const selectRoom = ref('')
 const roomOptions = ref([])
 // Dialog
 const footerLabel = ref('')
+const errorStartTime = 'Start time greater than end time not allowed.'
+const errorEndTime = 'End time lower than start time not allowed.'
 
 const openDialogScheduleForm = () => {
   dialogScheduleForm.value.openDialog()
@@ -142,13 +144,36 @@ const getDateFormat = (dateToConvert) => {
   const localString = `${year}-${month}-${day}`
   return localString
 }
+const checkStartTimeWithEndTimeValue = (event) => {
+  let isAlloweStartTime = true;
+  if (event && scheduleForm.value.EndTime) {
+    const [hh] = event.split(':');
+    if (parseInt(hh, 10) > parseInt(scheduleForm.value.EndTime, 10)) {
+      isAlloweStartTime = false;
+      message.value.StartTime = errorStartTime;
+    }
+  }
+  return isAlloweStartTime
+}
+const checkEndTimeWithStartTimeValue = (event) => {
+  let isAlloweEndTime = true;
+  if (event && scheduleForm.value.StartTime) {
+    const [hh] = event.split(':');
+    if (parseInt(hh, 10) < parseInt(scheduleForm.value.StartTime, 10)) {
+      isAlloweEndTime = false;
+      message.value.EndTime = errorEndTime;
+    }
+  }
+  return isAlloweEndTime
+}
 const createScheduleInfo = async () => {
   try {
     if (
       scheduleForm.value.Date &&
       scheduleForm.value.StartTime &&
+      checkStartTimeWithEndTimeValue(scheduleForm.value.StartTime) &&
       scheduleForm.value.EndTime &&
-      selectClass &&
+      checkEndTimeWithStartTimeValue(scheduleForm.value.EndTime) &&
       Object.keys(selectClass).length > 0 &&
       selectTrainer &&
       Object.keys(selectTrainer).length > 0 &&
@@ -171,7 +196,11 @@ const createScheduleInfo = async () => {
 
       let schedule = {}
       if (scheduleID.value) {
-        schedule = await $api.schedule.updateSchedule(schoolId, scheduleForm.value, scheduleID.value)
+        schedule = await $api.schedule.updateSchedule(
+          schoolId,
+          scheduleForm.value,
+          scheduleID.value
+        )
       } else {
         schedule = await $api.schedule.createSchedule(schoolId, scheduleForm.value)
       }
@@ -208,11 +237,17 @@ const createScheduleInfo = async () => {
       } else {
         message.value.StartTime = ''
       }
+      // if (!checkStartTimeWithEndTimeValue(scheduleForm.value.StartTime)){
+      //   message.value.StartTime = errorStartTime;
+      // }
       if (!scheduleForm.value.EndTime) {
         message.value.EndTime = 'End time is required'
       } else {
         message.value.EndTime = ''
       }
+      // if (!checkEndTimeWithStartTimeValue(scheduleForm.value.EndTime)){
+      //   message.value.EndTime = errorEndTime
+      // }
     }
   } catch (error) {
     console.log('Error create schedule info', error)
@@ -354,13 +389,6 @@ const setDefaultValue = () => {
   selectRoom.value = ''
   footerLabel.value = ''
 }
-const getValueStartDate = (value) => {
-  scheduleForm.value.StartTime = value;
-}
-const getValueEndDate = (value) => {
-  scheduleForm.value.EndTime = value;
-}
-
 defineExpose({ openDialogScheduleForm, onlyUpdateSchedule })
 </script>
 
@@ -438,7 +466,7 @@ defineExpose({ openDialogScheduleForm, onlyUpdateSchedule })
             v-model="scheduleForm.StartTime"
             :modelValue="scheduleForm.StartTime"
             :message_error="message.StartTime"
-            @get:value="getValueStartDate($event)"
+            @update:modelValue="checkStartTimeWithEndTimeValue($event)"
             class="col-6 py-0"
           />
           <CustomInputMask
@@ -448,7 +476,7 @@ defineExpose({ openDialogScheduleForm, onlyUpdateSchedule })
             :label="'End time'"
             v-model="scheduleForm.EndTime"
             :modelValue="scheduleForm.EndTime"
-            @get:value="getValueEndDate($event)"
+            @update:modelValue="checkEndTimeWithStartTimeValue($event)"
             :required="true"
             :message_error="message.EndTime"
           />

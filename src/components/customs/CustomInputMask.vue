@@ -1,7 +1,7 @@
 <script setup>
 import InputMask from 'primevue/inputmask'
 import { onMounted, reactive, ref, inject, provide, getCurrentInstance, watch } from 'vue'
-defineEmits(['update:modelValue', 'get:value'])
+defineEmits(['update:modelValue'])
 const instance = getCurrentInstance()
 const props = defineProps({
   msg: String,
@@ -20,12 +20,10 @@ const message_errors = ref(props.message_error)
 const showErrorSms = () => {
   show_error.value = true
   p_invalid.value = 'p-invalid'
-  instance.emit('update:modelValue', values.value)
 }
 const hideErrorSms = () => {
   show_error.value = false
   p_invalid.value = ''
-  instance.emit('update:modelValue', values.value)
 }
 const updateModelValue = (value) => {
   if (value) {
@@ -41,10 +39,7 @@ const updateModelValue = (value) => {
   } else if (props.message_error) {
     showErrorSms()
   }
-}
-const handleValue = (event) => {
-  console.log('vv', event);
-  instance.emit('get:value', event)
+  instance.emit('update:modelValue', values.value)
 }
 watch(
   [() => props.message_error, () => props.modelValue],
@@ -72,8 +67,7 @@ watch(
         :class="[required || message_error !== '' ? p_invalid : '']"
         :mask="mask"
         :placeholder="placeholder"
-        @update:modelValue="updateModelValue"
-        @:keyup="handleValue(values)"
+        @update:modelValue="updateModelValue(values)"
       />
       <small v-if="message_errors !== '' && show_error" class="flex text-red-500">
         {{ message_errors }}
