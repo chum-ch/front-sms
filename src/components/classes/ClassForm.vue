@@ -25,7 +25,7 @@ const classForm = ref({
   Floor: ''
 })
 // Room
-const selectRoom = ref('')
+const selectRoom = ref({})
 const roomOptions = ref([])
 // Trainer
 const trainerOptions = ref([])
@@ -168,7 +168,7 @@ const setDefaultValue = () => {
   message.value = {}
   classID.value = ''
   footerLabel.value = ''
-  selectRoom.value = ''
+  selectRoom.value = {}
   selectTrainer.value = ''
 }
 defineExpose({

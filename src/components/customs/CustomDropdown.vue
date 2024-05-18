@@ -89,6 +89,7 @@ const updateModelValue = (value) => {
   pInvalid.value = ""
   instance.emit('update:modelValue', value)
 }
+
 watch([() => props.messageError, () => props.modelValue], ([newPropMessageError, newPropModelValue]) => {
   if (newPropMessageError && !selectedValue.value ) {
     pInvalid.value = "p-invalid";
@@ -99,7 +100,7 @@ watch([() => props.messageError, () => props.modelValue], ([newPropMessageError,
     showError.value = false
     pInvalid.value = ""
   }
-})
+}, { immediate: true })
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to component only -->

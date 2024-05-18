@@ -91,7 +91,6 @@ const closeDialogScheduleForm = () => {
 }
 const onlyUpdateSchedule = (data = {}) => {
   if (Object.keys(data).length > 0) {
-    scheduleForm.value.Title = data.Title
     scheduleForm.value.Date = new Date(data.Date)
     scheduleForm.value.StartTime = data.StartTime
     scheduleForm.value.EndTime = data.EndTime
@@ -355,6 +354,12 @@ const setDefaultValue = () => {
   selectRoom.value = ''
   footerLabel.value = ''
 }
+const getValueStartDate = (value) => {
+  scheduleForm.value.StartTime = value;
+}
+const getValueEndDate = (value) => {
+  scheduleForm.value.EndTime = value;
+}
 
 defineExpose({ openDialogScheduleForm, onlyUpdateSchedule })
 </script>
@@ -433,6 +438,7 @@ defineExpose({ openDialogScheduleForm, onlyUpdateSchedule })
             v-model="scheduleForm.StartTime"
             :modelValue="scheduleForm.StartTime"
             :message_error="message.StartTime"
+            @get:value="getValueStartDate($event)"
             class="col-6 py-0"
           />
           <CustomInputMask
@@ -442,6 +448,7 @@ defineExpose({ openDialogScheduleForm, onlyUpdateSchedule })
             :label="'End time'"
             v-model="scheduleForm.EndTime"
             :modelValue="scheduleForm.EndTime"
+            @get:value="getValueEndDate($event)"
             :required="true"
             :message_error="message.EndTime"
           />

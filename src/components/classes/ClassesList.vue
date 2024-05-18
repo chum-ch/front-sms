@@ -73,7 +73,6 @@ const getListClasses = async () => {
     let classes = await $api.class.listClasses(schoolId)
     if (classes && classes.data && classes.data.length > 0) {
       tableDataClasses.value = classes.data
-      console.log(classes.data);
     } else {
       tableDataClasses.value = []
     }

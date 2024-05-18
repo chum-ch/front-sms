@@ -36,7 +36,7 @@ const refToChildCropImg = ref()
 const fullName = ref(`${studentBc.LastName} ${studentBc.FirstName}`)
 const email = ref(studentBc.Email)
 if (!schoolBc || !generationBc) {
-  route.push('/')
+  // route.push('/')
 } else {
   breadCrumb.value.push(
     { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },

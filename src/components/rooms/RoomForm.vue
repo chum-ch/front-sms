@@ -39,6 +39,7 @@ const closeDialogRoomForm = () => {
   setDefaultValue()
 }
 const onlyUpdateRoom = (data = {}) => {
+  console.log('d', data);
   if (data && Object.keys(data).length > 0) {
     roomForm.value.Name = data.Name
     roomForm.value.Floor = data.Floor

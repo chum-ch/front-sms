@@ -96,7 +96,7 @@ watch([() => props.messageError, () => props.modelValue], ([newPropMessageError,
   if (newPropModelValue) {
     values.value = newPropModelValue;
   }
-})
+} , { immediate: true })
 
 
 </script>

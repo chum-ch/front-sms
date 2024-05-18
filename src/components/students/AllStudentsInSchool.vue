@@ -66,7 +66,8 @@ onMounted(() => {
 })
 
 const onClickDetailsStudent = (event) => {
-  console.log(event)
+  $globalFunction.setDataLs('studentBc', event[0])
+  route.push(`generations/${event[0].GENERATIONS_ID}/students/${event[0].STUDENTS_ID}`)
 }
 const selectedRowData = (data) => {
   selectedStudent.value = data
@@ -127,6 +128,7 @@ defineExpose({})
       :isHideAddBtn="true"
       :isHideEditBtn="true"
       @onClickDelete="openDialogDeleteStudent"
+      @onClickDetails="onClickDetailsStudent"
     />
     <!-- Dialog delete room  -->
     <CustomDialog

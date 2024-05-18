@@ -57,7 +57,7 @@
               @mouseover="itemOption.Hovered = true"
               @mouseleave="itemOption.Hovered = false"
             >
-              <div class="checkbox-qa flex w-12">
+              <div class="checkbox-qa flex">
                 <PrimeVueCheckbox
                   v-model="checkBoxCorrectItem"
                   :inputId="itemOption.Text"
@@ -92,7 +92,7 @@
                 />
               </div>
               <i
-                class="pi pi-trash text-red-500 mx-2 mt-1 cursor-pointer"
+                class="pi pi-trash text-red-500 cursor-pointer"
                 @click="removeOption(indexQuestion, indexOption)"
                 v-show="itemOption.Hovered"
               ></i>
@@ -467,6 +467,9 @@ defineExpose({})
 <style scoped>
 .scroll-container {
   overflow-y: auto;
+}
+.checkbox-qa {
+  width: 97%;
 }
 input {
   border: none;
