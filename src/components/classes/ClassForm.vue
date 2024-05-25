@@ -25,7 +25,7 @@ const classForm = ref({
   Floor: ''
 })
 // Room
-const selectRoom = ref({})
+const selectRoom = ref('')
 const roomOptions = ref([])
 // Trainer
 const trainerOptions = ref([])

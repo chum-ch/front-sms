@@ -108,10 +108,12 @@ watch([() => props.messageError, () => props.modelValue], ([newPropMessageError,
 .customEmpty {
   padding: 3px;
   border-radius: 4px;
-  background: #007bff;
+  /* background: #007bff; */
+  background:var(--primary-color);
   cursor: pointer;
 }
 .customEmpty:hover {
-  background: #006adc;
+  /* background: #006adc; */
+  background:var(--primary-600);
 }
 </style>
