@@ -21,13 +21,11 @@ const refToChildCustomDialogDeleteStudent = ref();
 const refToChildCustomTable = ref()
 const breadCrumb = ref([
   { route: `/schools/${schoolId}/manages`, label: schoolBc.Name },
-  { label: 'Manages', route: `/schools/${schoolId}/manages` },
   {
     label: 'Students',
     route: `/schools/${schoolId}/students`
   }
 ])
-
 // Functions
 const tableDataStudentsUnderSchool = ref([])
 const selectedStudent = ref([])
@@ -138,7 +136,7 @@ defineExpose({})
       @onClickCloseDialog="closeDialogDeleteRoom()"
       :isDelete="true"
       :footerLabel="'Delete'"
-      :modalHeader="'Delete Room'"
+      :modalHeader="'Delete Student'"
     >
       <template #bodyDialog>
         <div class="text-center mt-4">You was selected {{ selectedStudent.length }} to delete.</div>
